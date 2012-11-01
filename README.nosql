@@ -1,0 +1,15 @@
+This branch of ZABBIX can use a NoSQL DB to store history data.
+
+==================
+How to build
+==================
+When the first time, the following may be needed.
+$ ./bootstrap.sh
+
+Ex.) Build with History Service support
+$ ./configure --enable-server --with-mysql --with-history-gluon --enable-agent --with-net-snmp
+
+[Note]
+On CentOS6.3, iksmel package is needed. It can be built and installed.
+Then, you need to run bootstrap.sh again.
+

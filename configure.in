@@ -1009,6 +1009,7 @@ have_snmp="no"
 have_ipmi="no"
 have_ipv6="no"
 have_ssh2="no"
+have_history_gluon="no"
 
 if test "x$ipv6" = "xyes"; then
 	AC_DEFINE(HAVE_IPV6,1,[Define to 1 if IPv6 should be enabled.])
@@ -1128,6 +1129,13 @@ if test "x$server" = "xyes" || test "x$proxy" = "xyes"; then
 	else
 		AC_MSG_RESULT(ok)
 	fi
+
+	dnl History Gluon to use NoSQL DBs
+	AC_ARG_WITH([history-gluon],
+	            AC_HELP_STRING([--with-history-gluon], [use History Gluon that is a frontend program of NoSQL DBs (default is NO)]),
+	            AC_DEFINE([HAVE_HISTORY_GLUON], [1], [Define to 1 if History Gluon is used])
+	            have_history_gluon="yes"
+	           )
 
 	AC_MSG_CHECKING(for multirow insert statements)
 	if test "x$have_multirow_insert" = "xyes"; then
@@ -1467,6 +1475,7 @@ if test "x$server" != "xno"; then
 
 echo "  Server details:
     With database:         ${have_db}
+    NoSQL (History Gluon): ${have_history_gluon}
     WEB Monitoring via:    ${have_web_monitoring}
     Native Jabber:         ${have_jabber}
     SNMP:                  ${have_snmp}
