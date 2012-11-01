@@ -1136,6 +1136,10 @@ if test "x$server" = "xyes" || test "x$proxy" = "xyes"; then
 	            AC_DEFINE([HAVE_HISTORY_GLUON], [1], [Define to 1 if History Gluon is used])
 	            have_history_gluon="yes"
 	           )
+	if test "x$have_history_gluon" = "xyes"; then
+		HISTORY_GLUON_REQUIRED=0.1
+		PKG_CHECK_MODULES(HISTORYGLUON, history-gluon-1.0 >= $HISTORY_GLUON_REQUIRED)
+	fi
 
 	AC_MSG_CHECKING(for multirow insert statements)
 	if test "x$have_multirow_insert" = "xyes"; then
