@@ -3,6 +3,9 @@ This branch of ZABBIX can use a NoSQL DB to store history data.
 ==================
 How to build
 ==================
+0) Install History Gluon
+
+1) Build this package
 When the first time, the following may be needed.
 $ ./bootstrap.sh
 
