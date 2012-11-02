@@ -27,6 +27,13 @@
 #include "dbcache.h"
 #include "zbxalgo.h"
 
+#if defined(HAVE_HISTORY_GLUON)
+#include "history-gluon.h"
+
+static history_gluon_context_t *hgl_ctx = NULL;
+static char	**DBget_history_with_history_gluon(zbx_uint64_t itemid, unsigned char value_type, int function, int clock_from, int clock_to, zbx_timespec_t *ts, const char *field_name, int last_n, int *h_num);
+#endif
+
 #define ZBX_DB_WAIT_DOWN	10
 
 #if HAVE_POSTGRESQL
@@ -2062,12 +2069,16 @@ char	**DBget_history(zbx_uint64_t itemid, unsigned char value_type, int function
 		zbx_timespec_t *ts, const char *field_name, int last_n)
 {
 	const char	*__function_name = "DBget_history";
+	char		**h_value = NULL;
+	int		h_num = 0;
+#if defined(HAVE_HISTORY_GLUON)
+	h_value = DBget_history_with_history_gluon(itemid, value_type, function, clock_from, clock_to, ts, field_name, last_n, &h_num);
+#else
 	char		sql[512];
 	size_t		offset;
 	DB_RESULT	result;
 	DB_ROW		row;
-	char		**h_value = NULL;
-	int		h_alloc = 1, h_num = 0, retry = 0, sec = 0, ns = 0;
+	int		h_alloc = 1, retry = 0, sec = 0, ns = 0;
 	const char	*func[] = {"min", "avg", "max", "sum", "count"};
 
 	zabbix_log(LOG_LEVEL_DEBUG, "In %s()", __function_name);
@@ -2201,7 +2212,7 @@ retry:
 		retry++;
 		goto retry;
 	}
-
+#endif
 	h_value[h_num] = NULL;
 
 	zabbix_log(LOG_LEVEL_DEBUG, "End of %s() h_num:%d", __function_name, h_num);
@@ -2233,3 +2244,179 @@ int	DBtxn_ongoing()
 {
 	return 0 == zbx_db_txn_level() ? FAIL : SUCCEED;
 }
+
+#if defined(HAVE_HISTORY_GLUON)
+static char **create_null_char_ptr(int *h_num)
+{
+	*h_num = 0;
+	char **ptr = NULL;
+	ptr = zbx_malloc(ptr, sizeof(char *));
+	ptr[0] = NULL;
+	return ptr;
+}
+
+static char **create_one_char_ptr(double val, int *h_num)
+{
+	*h_num = 1;
+	static const int buf_length = 32;
+	char buf[buf_length];
+	zbx_snprintf(buf, buf_length, "%lf", 32, val);
+	char **ptr = NULL;
+	ptr = zbx_malloc(ptr, sizeof(char *) * 2);
+	ptr[0] = zbx_strdup(NULL, buf);
+	ptr[1] = NULL;
+	return ptr;
+}
+
+static char **get_minimum(history_gluon_context_t *ctx, zbx_uint64_t itemid, int clock0, int clock1, int *h_num)
+{
+	history_gluon_statistics_t statistics;
+	history_gluon_result_t ret;
+	struct timespec ts0 = {clock0, 0};
+	struct timespec ts1 = {clock1, 0};
+	ret = history_gluon_get_statistics(ctx, itemid, &ts0, &ts1, &statistics);
+	if (ret != HGL_SUCCESS)
+	{
+		zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to get statistics: %d", __FILE__, __LINE__, ret);
+		return create_null_char_ptr(h_num);
+	}
+	return create_one_char_ptr(statistics.min, h_num);
+}
+
+static char **get_average(zbx_uint64_t itemid, int clock_from, int clock_to, int last_n, int *h_num)
+{
+	zabbix_log(LOG_LEVEL_ERR, "%s: %d: Not implemented", __FILE__, __LINE__);
+	return create_null_char_ptr(h_num);
+}
+
+static char **get_maximum(zbx_uint64_t itemid, int clock_from, int clock_to, int last_n, int *h_num)
+{
+	zabbix_log(LOG_LEVEL_ERR, "%s: %d: Not implemented", __FILE__, __LINE__);
+	return create_null_char_ptr(h_num);
+}
+
+static char **get_sum(zbx_uint64_t itemid, int clock_from, int clock_to, int last_n, int *h_num)
+{
+	zabbix_log(LOG_LEVEL_ERR, "%s: %d: Not implemented", __FILE__, __LINE__);
+	return create_null_char_ptr(h_num);
+}
+
+static char **get_count(zbx_uint64_t itemid, int clock_from, int clock_to, int last_n, int *h_num)
+{
+	zabbix_log(LOG_LEVEL_ERR, "%s: %d: Not implemented", __FILE__, __LINE__);
+	return create_null_char_ptr(h_num);
+}
+
+static char **get_delta(zbx_uint64_t itemid, int clock_from, int clock_to, int last_n, int *h_num)
+{
+	zabbix_log(LOG_LEVEL_ERR, "%s: %d: Not implemented", __FILE__, __LINE__);
+	return create_null_char_ptr(h_num);
+}
+
+static char **get_value_range(zbx_uint64_t itemid, int clock_from, int clock_to, int last_n, int *h_num)
+{
+	zabbix_log(LOG_LEVEL_ERR, "%s: %d: Not implemented", __FILE__, __LINE__);
+	return create_null_char_ptr(h_num);
+}
+
+static char **get_value_ts(zbx_uint64_t itemid, zbx_timespec_t *ts, int last_n, int *h_num)
+{
+	zabbix_log(LOG_LEVEL_ERR, "%s: %d: Not implemented", __FILE__, __LINE__);
+	return create_null_char_ptr(h_num);
+}
+
+static int check_param_check_for_get_compatible(int function, zbx_timespec_t *ts, const char *field_name, int last_n)
+{
+	// We assume these functions shall return one result.
+	if (function == ZBX_DB_GET_HIST_MIN ||
+	    function == ZBX_DB_GET_HIST_AVG ||
+	    function == ZBX_DB_GET_HIST_MAX ||
+	    function == ZBX_DB_GET_HIST_SUM ||
+	    function == ZBX_DB_GET_HIST_COUNT ||
+	    function == ZBX_DB_GET_HIST_DELTA)
+	{
+		if (last_n > 1)
+		{
+			zabbix_log(LOG_LEVEL_ERR,
+			           "%s: %d: last_n: is larger than 1: %d, "
+				   "function: %d",
+			           __FILE__, __LINE__, last_n, function);
+			return -1;
+		}
+
+		if (ts != NULL)
+		{
+			zabbix_log(LOG_LEVEL_ERR,
+			           "%s: %d: ts is not NULL,  function: %d",
+			           __FILE__, __LINE__, function);
+			return -1;
+		}
+	}
+	else if (function == ZBX_DB_GET_HIST_VALUE && (ts != NULL))
+	{
+		zabbix_log(LOG_LEVEL_ERR,
+		           "%s: %d: last_n: is larger than 1: %d, "
+		           "function: %d",
+		           __FILE__, __LINE__, last_n, function);
+		return -1;
+	}
+
+	// We assume the field name is "value" or NULL
+	if (field_name != NULL && strcmp(field_name, "value") != 0)
+	{
+		zabbix_log(LOG_LEVEL_ERR,
+		           "%s: %d: field_name not is NULL nor 'value': %s",
+		           __FILE__, __LINE__, field_name);
+		return -1;
+	}
+
+	return 0;
+}
+
+
+static char	**DBget_history_with_history_gluon(zbx_uint64_t itemid, unsigned char value_type, int function, int clock_from, int clock_to, zbx_timespec_t *ts, const char *field_name, int last_n, int *h_num)
+{
+	if (!hgl_ctx)
+		hgl_ctx = history_gluon_create_context();
+	if (!hgl_ctx) {
+		zabbix_log(LOG_LEVEL_ERR, "Failed to create History Gluon context");
+		return create_null_char_ptr(h_num);
+	}
+
+	int ret = check_param_check_for_get_compatible(function, ts,
+	                                               field_name, last_n);
+	if (ret == -1)
+		return create_null_char_ptr(h_num);
+
+	// Get requested value
+	char **h_value = NULL;
+	if (function == ZBX_DB_GET_HIST_MIN)
+		h_value = get_minimum(hgl_ctx, itemid, clock_from, clock_to, h_num);
+	else if (function == ZBX_DB_GET_HIST_AVG)
+		h_value = get_average(itemid, clock_from, clock_to, last_n, h_num);
+	else if (function == ZBX_DB_GET_HIST_MAX)
+		h_value = get_maximum(itemid, clock_from, clock_to, last_n, h_num);
+	else if (function == ZBX_DB_GET_HIST_SUM)
+		h_value = get_sum(itemid, clock_from, clock_to, last_n, h_num);
+	else if (function == ZBX_DB_GET_HIST_COUNT)
+		h_value = get_count(itemid, clock_from, clock_to, last_n, h_num);
+	else if (function == ZBX_DB_GET_HIST_DELTA)
+		h_value = get_delta(itemid, clock_from, clock_to, last_n, h_num);
+	else if (function == ZBX_DB_GET_HIST_VALUE)
+	{
+		if (ts == NULL)
+			h_value = get_value_range(itemid, clock_from, clock_to, last_n, h_num);
+		else
+			h_value = get_value_ts(itemid, ts, last_n, h_num);
+	}
+	else
+	{
+		zabbix_log(LOG_LEVEL_ERR,
+		           "%s: %s: unknown function: %d",
+		           __FILE__, __func__, function);
+		return create_null_char_ptr(h_num);
+	}
+
+	return h_value;
+}
+#endif

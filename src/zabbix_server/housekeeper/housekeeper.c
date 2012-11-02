@@ -27,6 +27,11 @@
 
 #include "housekeeper.h"
 
+#if defined(HAVE_HISTORY_GLUON)
+#include "history-gluon.h"
+history_gluon_context_t *hgl_ctx = NULL;
+#endif
+
 extern unsigned char	process_type;
 
 /******************************************************************************
@@ -224,18 +229,52 @@ static int	delete_history(const char *table, zbx_uint64_t itemid, int keep_histo
 	zabbix_log(LOG_LEVEL_DEBUG, "In %s() table:'%s' itemid:" ZBX_FS_UI64 " keep_history:%d now:%d",
 		__function_name, table, itemid, keep_history, now);
 
-	result = DBselect("select min(clock) from %s where itemid=" ZBX_FS_UI64, table, itemid);
-
-	if (NULL == (row = DBfetch(result)) || SUCCEED == DBis_null(row[0]))
-	{
-		DBfree_result(result);
-		return 0;
+#if defined(HAVE_HISTORY_GLUON)
+	static const char *history_table_prefix = "history";
+	static const int history_table_prefix_len = sizeof(history_table_prefix) - 1;
+	int table_is_history = (strncmp(table, history_table_prefix, history_table_prefix_len) == 0);
+	history_gluon_result_t ret;
+	struct timespec ts;
+	if (table_is_history) {
+		if (!hgl_ctx)
+			hgl_ctx = history_gluon_create_context();
+		if (!hgl_ctx) {
+			zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to create context", __FILE__, __LINE__);
+			return 0;
+		}
+		ret = history_gluon_get_minimum_time(hgl_ctx, itemid, &ts);
+		if (ret != HGL_SUCCESS) {
+			zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to get minimum time: %d",
+			           __FILE__, __LINE__, ret);
+			return 0;
+		}
 	}
-
-	min_clock = atoi(row[0]);
+	else
+#endif 
+        {
+		result = DBselect("select min(clock) from %s where itemid=" ZBX_FS_UI64, table, itemid);
+		if (NULL == (row = DBfetch(result)) || SUCCEED == DBis_null(row[0]))
+		{
+			DBfree_result(result);
+			return 0;
+		}
+		min_clock = atoi(row[0]);
+		DBfree_result(result);
+	}
 	min_clock = MIN(now - keep_history * SEC_PER_DAY, min_clock + 4 * CONFIG_HOUSEKEEPING_FREQUENCY * SEC_PER_HOUR);
-	DBfree_result(result);
 
+#if defined(HAVE_HISTORY_GLUON)
+	if (table_is_history) {
+		uint64_t deleted64;
+		ret = history_gluon_delete(hgl_ctx, itemid, &ts, HISTORY_GLUON_DELETE_TYPE_LESS, deleted64);
+		if (ret != HGL_SUCCESS) {
+			zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to delete items: %d", __FILE__, __LINE__, ret);
+			return 0;
+		}
+		deleted = deleted64;
+	}
+	else
+#endif
 	deleted = DBexecute("delete from %s where itemid=" ZBX_FS_UI64 " and clock<%d", table, itemid, min_clock);
 
 	zabbix_log(LOG_LEVEL_DEBUG, "End of %s():%d", __function_name, deleted);
