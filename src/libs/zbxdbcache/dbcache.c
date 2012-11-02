@@ -141,6 +141,12 @@ ZBX_DC_CACHE;
 
 static ZBX_DC_CACHE	*cache = NULL;
 
+#if defined(HAVE_HISTORY_GLUON)
+#include "history-gluon.h"
+history_gluon_context_t history_gluon_ctx = NULL;
+static void	DCmass_add_history_with_histroy_gluon(ZBX_DC_HISTORY *history, int history_num);
+#endif
+
 /******************************************************************************
  *                                                                            *
  * Function: DCget_stats                                                      *
@@ -2128,7 +2134,11 @@ int	DCsync_history(int sync_type)
 		if (0 != (daemon_type & ZBX_DAEMON_TYPE_SERVER))
 		{
 			DCmass_update_items(history, history_num);
+#if defined(HAVE_HISTORY_SERVICE)
+			DCmass_add_history_with_history_gluon(history, history_num);
+#else
 			DCmass_add_history(history, history_num);
+#endif
 			DCmass_update_triggers(history, history_num);
 			DCmass_update_trends(history, history_num);
 		}
@@ -3007,3 +3017,43 @@ int	DCget_item_lastclock(zbx_uint64_t itemid)
 
 	return clock;
 }
+
+#if defined(HAVE_HISTORY_GLUON)
+static void	DCadd_one_history(history_gluon_context_t *ctx, ZBX_DC_HISTORY *history)
+{
+	uint64_t id;
+	struct timespec ts;
+
+	if (history->keep_history == 0)
+		return;
+	if (history->value_null != 0)
+		return;
+
+	id = history->itemid;
+	ts.tv_sec = history->clock;
+	ts.tv_nsec = history->ns;
+	
+	if (history->value_type == ITEM_VALUE_TYPE_FLOAT)
+		history_gluon_add_float(ctx, id, &ts, history->value.dbl);
+	else if (history->value_type == ITEM_VALUE_TYPE_STR)
+		history_gluon_add_string(ctx, id, &ts, history->value.str);
+	else if (history->value_type == ITEM_VALUE_TYPE_UINT64)
+		history_gluon_add_uint(ctx, id, &ts, history->value.ui64);
+	else
+	{
+		zabbix_log(LOG_LEVEL_ERR, "%s: %s: unknown value type: %d",
+		           __FILE__, __func__, history->value_type);
+	}
+}
+
+static void	DCmass_add_history_with_histroy_gluon(ZBX_DC_HISTORY *history, int history_num)
+{
+	int i;
+	if (!history_gluon_ctx)
+		history_gluon_ctx = history_gluon_create_context();
+	if (!history_gluon_ctx)
+		return;
+	for (i = 0; i < history_num; i++)
+		DCadd_one_history(history_gluon_ctx, &history[i]);
+}
+#endif
