@@ -144,7 +144,7 @@ static ZBX_DC_CACHE	*cache = NULL;
 #if defined(HAVE_HISTORY_GLUON)
 #include "history-gluon.h"
 history_gluon_context_t history_gluon_ctx = NULL;
-static void	DCmass_add_history_with_histroy_gluon(ZBX_DC_HISTORY *history, int history_num);
+static void	DCmass_add_history_with_history_gluon(ZBX_DC_HISTORY *history, int history_num);
 #endif
 
 /******************************************************************************
@@ -2134,7 +2134,7 @@ int	DCsync_history(int sync_type)
 		if (0 != (daemon_type & ZBX_DAEMON_TYPE_SERVER))
 		{
 			DCmass_update_items(history, history_num);
-#if defined(HAVE_HISTORY_SERVICE)
+#if defined(HAVE_HISTORY_GLUON)
 			DCmass_add_history_with_history_gluon(history, history_num);
 #else
 			DCmass_add_history(history, history_num);
@@ -3046,7 +3046,7 @@ static void	DCadd_one_history(history_gluon_context_t *ctx, ZBX_DC_HISTORY *hist
 	}
 }
 
-static void	DCmass_add_history_with_histroy_gluon(ZBX_DC_HISTORY *history, int history_num)
+static void	DCmass_add_history_with_history_gluon(ZBX_DC_HISTORY *history, int history_num)
 {
 	int i;
 	if (!history_gluon_ctx)
