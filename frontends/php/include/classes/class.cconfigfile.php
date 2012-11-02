@@ -115,6 +115,27 @@ class CConfigFile {
 				$this->config['DB']['SCHEMA'] = $DB['SCHEMA'];
 			}
 
+			if (isset($HISTORY_DB['USE'])) {
+				$this->config['HISTORY_DB']['USE'] = $HISTORY_DB['USE'];
+			}
+			elseif (isset($USE_HISTORY_DB)) {
+				$this->config['HISTORY_DB']['USE'] = $USE_HISTORY_DB;
+			}
+			
+			if (isset($HISTORY_DB['SERVER'])) {
+				$this->config['HISTORY_DB']['SERVER'] = $HISTORY_DB['SERVER'];
+			}
+			elseif (isset($HISTORY_DB_SERVER)) {
+				$this->config['HISTORY_DB']['SERVER'] = $HISTORY_DB_SERVER;
+			}
+			
+			if (isset($HISTORY_DB['PORT'])) {
+				$this->config['HISTORY_DB']['PORT'] = $HISTORY_DB['PORT'];
+			}
+			elseif (isset($HISTORY_DB_PORT)) {
+				$this->config['HISTORY_DB']['PORT'] = $HISTORY_DB_PORT;
+			}
+
 			if (isset($ZBX_SERVER)) {
 				$this->config['ZBX_SERVER'] = $ZBX_SERVER;
 			}
@@ -165,6 +186,7 @@ class CConfigFile {
 '<?php
 // Zabbix GUI configuration file
 global $DB;
+global $HISTORY_DB;
 
 $DB[\'TYPE\']			= \''.$this->config['DB']['TYPE'].'\';
 $DB[\'SERVER\']			= \''.$this->config['DB']['SERVER'].'\';
@@ -175,6 +197,10 @@ $DB[\'PASSWORD\']		= \''.$this->config['DB']['PASSWORD'].'\';
 
 // SCHEMA is relevant only for IBM_DB2 database
 $DB[\'SCHEMA\']			= \''.$this->config['DB']['SCHEMA'].'\';
+
+$HISTORY_DB[\'USE\']		= \''.$this->config['HISTORY_DB']['USE'].'\';
+$HISTORY_DB[\'SERVER\']	= \''.$this->config['HISTORY_DB']['SERVER'].'\';
+$HISTORY_DB[\'PORT\']		= \''.$this->config['HISTORY_DB']['PORT'].'\';
 
 $ZBX_SERVER				= \''.$this->config['ZBX_SERVER'].'\';
 $ZBX_SERVER_PORT		= \''.$this->config['ZBX_SERVER_PORT'].'\';
@@ -194,6 +220,11 @@ $IMAGE_FORMAT_DEFAULT	= IMAGE_FORMAT_PNG;
 			'USER' => '',
 			'PASSWORD' => '',
 			'SCHEMA' => ''
+		);
+		$this->config['HISTORY_DB'] = array(
+			'USE' => 'no',
+			'SERVER' => 'localhost',
+			'PORT' => '0'
 		);
 		$this->config['ZBX_SERVER'] = 'localhost';
 		$this->config['ZBX_SERVER_PORT'] = '10051';

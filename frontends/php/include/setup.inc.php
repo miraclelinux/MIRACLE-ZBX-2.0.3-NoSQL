@@ -285,6 +285,19 @@ class CsetupWizard extends CForm {
 			break;
 		}
 
+		$table->addRow(array(
+			new CCol(_('Use Histroy DB'), 'header'),
+			new CCheckBox('use_history_db', $this->getConfig('USE_HISTORY_DB', 'no'))
+		));
+		$table->addRow(array(
+			new CCol(_('Histroy DB host'), 'header'),
+			new CTextBox('history_db_server', $this->getConfig('HISTORY_DB_SERVER', 'localhost'))
+		));
+		$table->addRow(array(
+			new CCol(_('History DBe port'), 'header'),
+				array(new CNumericBox('history_db_port', $this->getConfig('HISTORY_DB_PORT', '0'), 5), ' 0 - use default port')
+		));
+
 		return array(
 			new CDiv(new CDiv(array('Please create database manually,', BR(),
 			'and set the configuration parameters for connection to this database.',
@@ -365,14 +378,21 @@ class CsetupWizard extends CForm {
 		}
 
 		$table->addRow(BR());
+		$table->addRow(array(new CCol(_('Use History DB'), 'header'), $this->getConfig('USE_HISTORY_DB')));
+		$table->addRow(array(new CCol(_('History DB server'), 'header'), $this->getConfig('HISTORY_DB_SERVER')));
+		$table->addRow(array(new CCol(_('History DB port'), 'header'), $this->getConfig('HISTORY_DB_PORT')));
+
+		$table->addRow(BR());
 		$table->addRow(array(new CCol(_('Zabbix server'), 'header'), $this->getConfig('ZBX_SERVER')));
 		$table->addRow(array(new CCol(_('Zabbix server port'), 'header'), $this->getConfig('ZBX_SERVER_PORT')));
 		$table->addRow(array(new CCol(_('Zabbix server name'), 'header'), $this->getConfig('ZBX_SERVER_NAME')));
 
 		return array(
-			'Please check configuration parameters.', BR(),
-			'If all is correct, press "Next" button, or "Previous" button to change configuration parameters.', BR(), BR(),
-			$table
+			new CDiv(array(
+				'Please check configuration parameters.', BR(),
+				'If all is correct, press "Next" button, or "Previous" button to change configuration parameters.', BR(), BR(),
+				$table
+			), 'table_wraper')
 		);
 	}
 
@@ -392,6 +412,12 @@ class CsetupWizard extends CForm {
 				'PASSWORD' => $this->getConfig('DB_PASSWORD'),
 				'SCHEMA' => $this->getConfig('DB_SCHEMA')
 			),
+			'HISTORY_DB' => array(
+				'USE' => $this->getConfig('USE_HISTORY_DB'),
+				'SERVER' => $this->getConfig('HISTORY_DB_SERVER'),
+				'PORT' => $this->getConfig('HISTORY_DB_PORT')
+			),
+
 			'ZBX_SERVER' => $this->getConfig('ZBX_SERVER'),
 			'ZBX_SERVER_PORT' => $this->getConfig('ZBX_SERVER_PORT'),
 			'ZBX_SERVER_NAME' => $this->getConfig('ZBX_SERVER_NAME')
@@ -422,6 +448,16 @@ class CsetupWizard extends CForm {
 			elseif ($this->getConfig('DB_TYPE') == ZBX_DB_DB2 && $config->config['DB']['SCHEMA'] != $this->getConfig('DB_SCHEMA')) {
 				$error = true;
 			}
+			elseif ($config->config['HISTORY_DB']['USE'] != $this->getConfig('USE_HISTORY_DB')) {
+				$error = true;
+			}
+			elseif ($config->config['HISTORY_DB']['SERVER'] != $this->getConfig('HISTORY_DB_SERVER')) {
+				$error = true;
+			}
+			elseif ($config->config['HISTORY_DB']['PORT'] != $this->getConfig('HISTORY_DB_PORT')) {
+				$error = true;
+			}
+
 			elseif ($config->config['ZBX_SERVER'] != $this->getConfig('ZBX_SERVER')) {
 				$error = true;
 			}
@@ -531,6 +567,9 @@ class CsetupWizard extends CForm {
 			$this->setConfig('DB_USER', get_request('user', $this->getConfig('DB_USER', 'root')));
 			$this->setConfig('DB_PASSWORD', get_request('password', $this->getConfig('DB_PASSWORD', '')));
 			$this->setConfig('DB_SCHEMA', get_request('schema', $this->getConfig('DB_SCHEMA', '')));
+			$this->setConfig('USE_HISTORY_DB', get_request('use_history_db', 'no'));
+			$this->setConfig('HISTORY_DB_SERVER', get_request('history_db_server', $this->getConfig('HISTORY_DB_SERVER', 'localhost')));
+			$this->setConfig('HISTORY_DB_PORT', get_request('history_db_port', $this->getConfig('HISTORY_DB_PORT', '0')));
 
 			if (isset($_REQUEST['retry'])) {
 				if (!$this->CheckConnection()) {
@@ -575,6 +614,11 @@ class CsetupWizard extends CForm {
 						'USER' => $this->getConfig('DB_USER'),
 						'PASSWORD' => $this->getConfig('DB_PASSWORD'),
 						'SCHEMA' => $this->getConfig('DB_SCHEMA')
+					),
+					'HISTORY_DB' => array(
+						'USE' => $this->getConfig('USE_HISTORY_DB'),
+						'SERVER' => $this->getConfig('HISTORY_DB_SERVER'),
+						'PORT' => $this->getConfig('HISTORY_DB_PORT')
 					),
 					'ZBX_SERVER' => $this->getConfig('ZBX_SERVER'),
 					'ZBX_SERVER_PORT' => $this->getConfig('ZBX_SERVER_PORT'),

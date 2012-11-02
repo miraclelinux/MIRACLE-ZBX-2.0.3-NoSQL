@@ -53,6 +53,7 @@ require_once dirname(__FILE__).'/sounds.inc.php';
 require_once dirname(__FILE__).'/triggers.inc.php';
 require_once dirname(__FILE__).'/users.inc.php';
 require_once dirname(__FILE__).'/valuemap.inc.php';
+require_once dirname(__FILE__).'/history-gluon.inc.php';
 
 global $USER_DETAILS, $USER_RIGHTS, $ZBX_PAGE_POST_JS, $page;
 global $ZBX_LOCALNODEID, $ZBX_LOCMASTERID, $ZBX_CONFIGURATION_FILE, $DB;

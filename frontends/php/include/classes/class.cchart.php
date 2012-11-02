@@ -174,6 +174,8 @@ class CChart extends CGraphDraw {
 	}
 
 	protected function selectData() {
+		global $HISTORY_DB;
+
 		$this->data = array();
 		$now = time(null);
 
@@ -281,34 +283,30 @@ class CChart extends CGraphDraw {
 			$curr_data['avg'] = null;
 			$curr_data['clock'] = null;
 
-			foreach ($sql_arr as $sql) {
-				$result = DBselect($sql);
-				while ($row = DBfetch($result)) {
+			if ($HISTORY_DB['USE'] == 'yes') {
+				$history_gluon = HistoryGluon::getInstance();
+				$data_arr = $history_gluon->getHistory($this->items[$i]['itemid'], $from_time, $to_time);
+				if ($data_arr == null)
+					return;
+				$calc_data_arr = $history_gluon->calcStatisticalParam($data_arr, $x, $z, $p);
+				foreach ($calc_data_arr as $key => $row) {
 					$idx = $row['i'] - 1;
-					if ($idx < 0) {
+					if ($idx < 0)
 						continue;
-					}
-
-					/* --------------------------------------------------
-						We are taking graph on 1px more than we need,
-						and here we are skiping first px, because of MOD (in SELECT),
-						it combines prelast point (it would be last point if not that 1px in begining)
-						and first point, but we still losing prelast point :(
-						but now we've got the first point.
-					--------------------------------------------------*/
-					$curr_data['count'][$idx] = $row['count'];
-					$curr_data['min'][$idx] = $row['min'];
-					$curr_data['max'][$idx] = $row['max'];
-					$curr_data['avg'][$idx] = $row['avg'];
-					$curr_data['clock'][$idx] = $row['clock'];
-					$curr_data['shift_min'][$idx] = 0;
-					$curr_data['shift_max'][$idx] = 0;
-					$curr_data['shift_avg'][$idx] = 0;
+					$this->addRowIntoCurrData($curr_data, $row, $idx);
+					unset($row);
 				}
-
-				$loc_min = is_array($curr_data['min']) ? min($curr_data['min']) : null;
-				$this->setGraphOrientation($loc_min, $this->items[$i]['axisside']);
-				unset($row);
+			} else {
+				foreach ($sql_arr as $sql) {
+					$result = DBselect($sql);
+					while ($row = DBfetch($result)) {
+						$idx = $row['i'] - 1;
+						if ($idx < 0)
+							continue;
+						$this->addRowIntoCurrData($curr_data, $row, $idx);
+						unset($row);
+					}
+				}
 			}
 			$curr_data['avg_orig'] = zbx_avg($curr_data['avg']);
 
@@ -2376,5 +2374,26 @@ class CChart extends CGraphDraw {
 		unset($this->items, $this->data);
 
 		imageOut($this->im);
+	}
+
+	private function addRowIntoCurrData(&$curr_data, $row, $idx) {
+		/* --------------------------------------------------
+		We are taking graph on 1px more than we need,
+		and here we are skiping first px, because of MOD (in SELECT),
+		it combines prelast point (it would be last point if not that 1px in begining)
+		and first point, but we still losing prelast point :(
+		but now we've got the first point.
+		--------------------------------------------------*/
+		$curr_data['count'][$idx] = $row['count'];
+		$curr_data['min'][$idx] = $row['min'];
+		$curr_data['max'][$idx] = $row['max'];
+		$curr_data['avg'][$idx] = $row['avg'];
+		$curr_data['clock'][$idx] = $row['clock'];
+		$curr_data['shift_min'][$idx] = 0;
+		$curr_data['shift_max'][$idx] = 0;
+		$curr_data['shift_avg'][$idx] = 0;
+
+		$loc_min = is_array($curr_data['min']) ? min($curr_data['min']) : null;
+		$this->setGraphOrientation($loc_min, $this->items[$i]['axisside']);
 	}
 }
