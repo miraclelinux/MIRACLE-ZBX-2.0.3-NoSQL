@@ -244,8 +244,9 @@ static int	delete_history(const char *table, zbx_uint64_t itemid, int keep_histo
 		}
 		ret = history_gluon_get_minimum_time(hgl_ctx, itemid, &ts);
 		if (ret != HGL_SUCCESS) {
-			zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to get minimum time: %d",
-			           __FILE__, __LINE__, ret);
+			zabbix_log(LOG_LEVEL_ERR,
+			           "%s: %d: Failed to get minimum time: itemid: " ZBX_FS_UI64 ", ret: %" PRIu64,
+			           __FILE__, __LINE__, itemid, ret);
 			return 0;
 		}
 	}
@@ -268,7 +269,9 @@ static int	delete_history(const char *table, zbx_uint64_t itemid, int keep_histo
 		uint64_t deleted64;
 		ret = history_gluon_delete(hgl_ctx, itemid, &ts, HISTORY_GLUON_DELETE_TYPE_LESS, &deleted64);
 		if (ret != HGL_SUCCESS) {
-			zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to delete items: %d", __FILE__, __LINE__, ret);
+			zabbix_log(LOG_LEVEL_ERR,
+			           "%s: %d: Failed to delete: itemid: " ZBX_FS_UI64 ", ret: %" PRIu64,
+			           __FILE__, __LINE__, itemid, ret);
 			return 0;
 		}
 		deleted = deleted64;
