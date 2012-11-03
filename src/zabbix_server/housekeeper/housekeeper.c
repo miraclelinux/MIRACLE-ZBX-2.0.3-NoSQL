@@ -266,7 +266,7 @@ static int	delete_history(const char *table, zbx_uint64_t itemid, int keep_histo
 #if defined(HAVE_HISTORY_GLUON)
 	if (table_is_history) {
 		uint64_t deleted64;
-		ret = history_gluon_delete(hgl_ctx, itemid, &ts, HISTORY_GLUON_DELETE_TYPE_LESS, deleted64);
+		ret = history_gluon_delete(hgl_ctx, itemid, &ts, HISTORY_GLUON_DELETE_TYPE_LESS, &deleted64);
 		if (ret != HGL_SUCCESS) {
 			zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to delete items: %d", __FILE__, __LINE__, ret);
 			return 0;
