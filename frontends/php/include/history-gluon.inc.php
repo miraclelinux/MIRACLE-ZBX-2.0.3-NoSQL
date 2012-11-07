@@ -96,8 +96,17 @@ class HistoryGluon
 	// private methods
 	// ------------------------------------------------------------------
 	private function __construct() {
+		global $HISTORY_DB;
 		if (!extension_loaded('History Gluon PHP Extension'))
 			dl("history_gluon.so");
-		$this->ctx = history_gluon_create_context();
+		$server = null;
+		$port = 0;
+		if (isset($HISTORY_DB['SERVER'])) 
+			$server = $HISTORY_DB['SERVER'];
+		if (isset($HISTORY_DB['PORT'])) 
+			$port = $HISTORY_DB['PORT'];
+		$ctx = 0;
+		$ret = history_gluon_create_context('zabbix', $server, $port, $ctx);
+		$this->ctx = $ctx;
 	}
 }
