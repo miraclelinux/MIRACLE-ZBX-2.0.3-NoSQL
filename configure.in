@@ -1137,7 +1137,7 @@ if test "x$server" = "xyes" || test "x$proxy" = "xyes"; then
 	            have_history_gluon="yes"
 	           )
 	if test "x$have_history_gluon" = "xyes"; then
-		HISTORY_GLUON_REQUIRED=0.1
+		HISTORY_GLUON_REQUIRED=0.2
 		PKG_CHECK_MODULES(HISTORYGLUON, history-gluon-1.0 >= $HISTORY_GLUON_REQUIRED)
 	fi
 

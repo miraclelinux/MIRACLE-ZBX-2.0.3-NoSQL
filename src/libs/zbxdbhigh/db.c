@@ -30,7 +30,7 @@
 #if defined(HAVE_HISTORY_GLUON)
 #include "history-gluon.h"
 
-static history_gluon_context_t *hgl_ctx = NULL;
+static history_gluon_context_t hgl_ctx = NULL;
 static char	**DBget_history_with_history_gluon(zbx_uint64_t itemid, unsigned char value_type, int function, int clock_from, int clock_to, zbx_timespec_t *ts, const char *field_name, int last_n, int *h_num);
 #endif
 
@@ -2268,7 +2268,7 @@ static char **create_one_char_ptr(double val, int *h_num)
 	return ptr;
 }
 
-static char **get_minimum(history_gluon_context_t *ctx, zbx_uint64_t itemid, int clock0, int clock1, int *h_num)
+static char **get_minimum(history_gluon_context_t ctx, zbx_uint64_t itemid, int clock0, int clock1, int *h_num)
 {
 	history_gluon_statistics_t statistics;
 	history_gluon_result_t ret;
@@ -2376,16 +2376,15 @@ static int check_param_check_for_get_compatible(int function, zbx_timespec_t *ts
 
 static char	**DBget_history_with_history_gluon(zbx_uint64_t itemid, unsigned char value_type, int function, int clock_from, int clock_to, zbx_timespec_t *ts, const char *field_name, int last_n, int *h_num)
 {
+	history_gluon_result_t ret;
 	if (!hgl_ctx)
-		hgl_ctx = history_gluon_create_context();
-	if (!hgl_ctx) {
+		ret = history_gluon_create_context("zabbix", NULL, 0, &hgl_ctx);
+	if (ret != HGL_SUCCESS || !hgl_ctx) {
 		zabbix_log(LOG_LEVEL_ERR, "Failed to create History Gluon context");
 		return create_null_char_ptr(h_num);
 	}
 
-	int ret = check_param_check_for_get_compatible(function, ts,
-	                                               field_name, last_n);
-	if (ret == -1)
+	if (check_param_check_for_get_compatible(function, ts, field_name, last_n) != 0)
 		return create_null_char_ptr(h_num);
 
 	// Get requested value

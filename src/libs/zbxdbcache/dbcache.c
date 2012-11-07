@@ -3049,9 +3049,10 @@ static void	DCadd_one_history(history_gluon_context_t *ctx, ZBX_DC_HISTORY *hist
 static void	DCmass_add_history_with_history_gluon(ZBX_DC_HISTORY *history, int history_num)
 {
 	int i;
+	history_gluon_result_t ret;
 	if (!history_gluon_ctx)
-		history_gluon_ctx = history_gluon_create_context();
-	if (!history_gluon_ctx)
+		ret = history_gluon_create_context("zabbix", NULL, 0, &history_gluon_ctx);
+	if (ret != HGL_SUCCESS || !history_gluon_ctx)
 		return;
 	for (i = 0; i < history_num; i++)
 		DCadd_one_history(history_gluon_ctx, &history[i]);

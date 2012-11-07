@@ -29,7 +29,7 @@
 
 #if defined(HAVE_HISTORY_GLUON)
 #include "history-gluon.h"
-history_gluon_context_t *hgl_ctx = NULL;
+history_gluon_context_t hgl_ctx = NULL;
 #endif
 
 extern unsigned char	process_type;
@@ -237,8 +237,8 @@ static int	delete_history(const char *table, zbx_uint64_t itemid, int keep_histo
 	struct timespec ts;
 	if (table_is_history) {
 		if (!hgl_ctx)
-			hgl_ctx = history_gluon_create_context();
-		if (!hgl_ctx) {
+			ret = history_gluon_create_context("zabbix", NULL, 0, &hgl_ctx);
+		if (ret != HGL_SUCCESS || !hgl_ctx) {
 			zabbix_log(LOG_LEVEL_ERR, "%s: %d: Failed to create context", __FILE__, __LINE__);
 			return 0;
 		}
