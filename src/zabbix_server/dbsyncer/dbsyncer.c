@@ -28,6 +28,7 @@
 #include "dbsyncer.h"
 
 extern int		CONFIG_HISTSYNCER_FREQUENCY;
+extern int		CONFIG_BENCHMARK_MODE;
 extern int		ZBX_SYNC_MAX;
 extern unsigned char	process_type;
 extern int		process_num;
@@ -48,6 +49,7 @@ void	main_dbsyncer_loop()
 	int	sleeptime, last_sleeptime = -1, num;
 	double	sec;
 	int	retry_up = 0, retry_dn = 0;
+	int	histsyncer_log_level = (1 == CONFIG_BENCHMARK_MODE) ? LOG_LEVEL_INFORMATION : LOG_LEVEL_DEBUG;
 
 	zabbix_log(LOG_LEVEL_DEBUG, "In main_dbsyncer_loop() process_num:%d", process_num);
 
@@ -65,7 +67,7 @@ void	main_dbsyncer_loop()
 		num = DCsync_history(ZBX_SYNC_PARTIAL);
 		sec = zbx_time() - sec;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s #%d spent " ZBX_FS_DBL " seconds while processing %d items",
+		zabbix_log(histsyncer_log_level, "%s #%d spent " ZBX_FS_DBL " seconds while processing %d items",
 				get_process_type_string(process_type), process_num, sec, num);
 
 		if (-1 == last_sleeptime)
