@@ -53,6 +53,8 @@ extern unsigned char	daemon_type;
 
 extern int		CONFIG_HISTSYNCER_FREQUENCY;
 extern int		CONFIG_NODE_NOHISTORY;
+extern int		CONFIG_BENCHMARK_MODE;
+extern int		CONFIG_HISTORY_GLUON_NULL_WRITE;
 
 static int		ZBX_HISTORY_SIZE = 0;
 int			ZBX_SYNC_MAX = 1000;	/* must be less than ZBX_HISTORY_SIZE */
@@ -3049,6 +3051,13 @@ static void	DCadd_one_history(history_gluon_context_t *ctx, ZBX_DC_HISTORY *hist
 static void	DCmass_add_history_with_history_gluon(ZBX_DC_HISTORY *history, int history_num)
 {
 	int i;
+
+	if (1 == CONFIG_BENCHMARK_MODE && 1 == CONFIG_HISTORY_GLUON_NULL_WRITE) {
+		zabbix_log(LOG_LEVEL_DEBUG, "History Gluon NULL mode",
+			   __FILE__, __func__);
+		return;
+	}
+
 	history_gluon_result_t ret;
 	if (!history_gluon_ctx)
 		ret = history_gluon_create_context("zabbix", NULL, 0, &history_gluon_ctx);

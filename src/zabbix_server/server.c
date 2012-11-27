@@ -183,6 +183,10 @@ int	CONFIG_PROXYPOLLER_FORKS	= 1;	/* parameters for passive proxies */
 int	CONFIG_PROXYCONFIG_FREQUENCY	= 3600;	/* 1h */
 int	CONFIG_PROXYDATA_FREQUENCY	= 1;	/* 1s */
 
+/* for benchmark */
+int	CONFIG_BENCHMARK_MODE		= 0;
+int	CONFIG_HISTORY_GLUON_NULL_WRITE	= 0;
+
 /* mutex for node syncs */
 ZBX_MUTEX	node_sync_access;
 
@@ -385,6 +389,10 @@ static void	zbx_load_config()
 			PARM_OPT,	1,			SEC_PER_WEEK},
 		{"ProxyDataFrequency",		&CONFIG_PROXYDATA_FREQUENCY,		TYPE_INT,
 			PARM_OPT,	1,			SEC_PER_HOUR},
+		{"BenchmarkMode",		&CONFIG_BENCHMARK_MODE,			TYPE_INT,
+			PARM_OPT,	0,			1},
+		{"HistoryGluonNullWrite",	&CONFIG_HISTORY_GLUON_NULL_WRITE,	TYPE_INT,
+			PARM_OPT,	0,			1},
 		{NULL}
 	};
 
