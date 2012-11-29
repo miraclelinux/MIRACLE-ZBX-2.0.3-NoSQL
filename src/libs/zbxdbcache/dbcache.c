@@ -50,6 +50,8 @@ static char		*sql = NULL;
 static size_t		sql_alloc = 64 * ZBX_KIBIBYTE;
 
 extern unsigned char	daemon_type;
+extern unsigned char	process_type;
+extern int		process_num;
 
 extern int		CONFIG_HISTSYNCER_FREQUENCY;
 extern int		CONFIG_NODE_NOHISTORY;
@@ -2014,6 +2016,8 @@ int	DCsync_history(int sync_type)
 
 	do
 	{
+		double sec = zbx_time();
+
 		LOCK_CACHE;
 
 		history_num = 0;
@@ -2192,6 +2196,12 @@ int	DCsync_history(int sync_type)
 					(double)total_num / (cache->history_num + total_num) * 100);
 			now = time(NULL);
 		}
+		
+		sec = zbx_time() - sec;
+		if (1 == CONFIG_BENCHMARK_MODE)
+			zabbix_log(LOG_LEVEL_INFORMATION, "%s #%d (1 loop) spent " ZBX_FS_DBL " seconds while processing %d items",
+					get_process_type_string(process_type), process_num, sec, history_num);
+
 	}
 	while (--syncs > 0 || sync_type == ZBX_SYNC_FULL || (skipped_clock != 0 && skipped_clock < max_delay));
 finish:
