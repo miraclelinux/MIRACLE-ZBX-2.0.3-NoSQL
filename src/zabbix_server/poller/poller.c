@@ -771,6 +771,9 @@ void	main_poller_loop(unsigned char poller_type)
 {
 	int	nextcheck, sleeptime, processed;
 	double	sec;
+	double	now = zbx_time(), last_report_time = now, process_time = 0;
+	int	n_values = 0;
+	int	poller_log_level = (1 == CONFIG_BENCHMARK_MODE) ? LOG_LEVEL_INFORMATION : LOG_LEVEL_DEBUG;
 
 	zabbix_log(LOG_LEVEL_DEBUG, "In main_poller_loop() process_type:'%s' process_num:%d",
 			get_process_type_string(process_type), process_num);
@@ -787,8 +790,16 @@ void	main_poller_loop(unsigned char poller_type)
 		processed = get_values(poller_type);
 		sec = zbx_time() - sec;
 
-		zabbix_log(LOG_LEVEL_DEBUG, "%s #%d spent " ZBX_FS_DBL " seconds while updating %d values",
-				get_process_type_string(process_type), process_num, sec, processed);
+	        now = zbx_time();
+		n_values += processed;
+		process_time += sec;
+		if (now - last_report_time > 1 && n_values > 0) {
+			zabbix_log(poller_log_level, "%s #%d spent " ZBX_FS_DBL " seconds while updating %d values",
+					get_process_type_string(process_type), process_num, process_time, n_values);
+			last_report_time = now;
+			n_values = 0;
+			process_time = 0;
+		}
 
 		nextcheck = DCconfig_get_poller_nextcheck(poller_type);
 		sleeptime = calculate_sleeptime(nextcheck, POLLER_DELAY);

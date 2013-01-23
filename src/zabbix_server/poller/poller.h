@@ -24,6 +24,7 @@ extern int	CONFIG_TIMEOUT;
 extern int	CONFIG_UNAVAILABLE_DELAY;
 extern int	CONFIG_UNREACHABLE_PERIOD;
 extern int	CONFIG_UNREACHABLE_DELAY;
+extern int	CONFIG_BENCHMARK_MODE;
 
 void	main_poller_loop(unsigned char poller_type);
 
