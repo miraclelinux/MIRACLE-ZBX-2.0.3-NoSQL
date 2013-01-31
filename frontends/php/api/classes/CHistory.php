@@ -318,9 +318,39 @@ class CHistory extends CZBXAPI {
 	}
 
 	private function getByHistoryGluon($options = array()) {
-		$result = array();
+		// FIXME: most features aren't implemented yet!
 
-		// FIXME: implement it!
+		if (!is_null($options['itemids'])) {
+			zbx_value2array($options['itemids']);
+		}
+
+		if (is_null($options['time_from'])) {
+			$time_from = 0;
+		} else {
+			$time_from = $options['time_from'];
+		}
+
+		if (is_null($options['time_till'])) {
+			$time_till = time(null);
+		} else {
+			$time_till = $options['time_till'];
+		}
+
+		$history_gluon = HistoryGluon::getInstance();
+		$result = array();
+		$idx = 0;
+
+		foreach ($options['itemids'] as $itemid) {
+			$data_array = $history_gluon->getHistory($itemid, $time_from, $time_till);
+
+			foreach ($data_array["array"] as $data) {
+				$result[$idx]["itemid"] = $data["id"];
+				$result[$idx]["clock"] = $data["sec"];
+				$result[$idx]["ns"] = $data["ns"];
+				$result[$idx]["value"] = $data["value"];
+				$idx++;
+			}
+		}
 
 		if (is_null($options['preservekeys'])) {
 			$result = zbx_cleanHashes($result);
