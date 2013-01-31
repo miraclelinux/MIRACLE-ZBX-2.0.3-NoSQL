@@ -54,7 +54,7 @@ class CHistory extends CZBXAPI {
 		}
 	}
 
-	private function getBySQL() {
+	private function getBySQL($options = array()) {
 		$result = array();
 		$nodeCheck = false;
 
@@ -317,7 +317,7 @@ class CHistory extends CZBXAPI {
 		return $result;
 	}
 
-	private function getByHistoryGluon() {
+	private function getByHistoryGluon($options = array()) {
 		$result = array();
 
 		// FIXME: implement it!
