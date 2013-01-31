@@ -46,6 +46,15 @@ class CHistory extends CZBXAPI {
 	 * @return array|int item data as array or false if error
 	 */
 	public function get($options = array()) {
+		global $HISTORY_DB;
+		if ($HISTORY_DB['USE'] == 'no') {
+			return $this->getByHistoryGluon($options);
+		} else {
+			return $this->getBySQL($options);
+		}
+	}
+
+	private function getBySQL() {
 		$result = array();
 		$nodeCheck = false;
 
@@ -305,6 +314,18 @@ class CHistory extends CZBXAPI {
 		if (is_null($options['preservekeys'])) {
 			$result = zbx_cleanHashes($result);
 		}
+		return $result;
+	}
+
+	private function getByHistoryGluon() {
+		$result = array();
+
+		// FIXME: implement it!
+
+		if (is_null($options['preservekeys'])) {
+			$result = zbx_cleanHashes($result);
+		}
+
 		return $result;
 	}
 
