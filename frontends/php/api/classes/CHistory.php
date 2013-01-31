@@ -47,7 +47,7 @@ class CHistory extends CZBXAPI {
 	 */
 	public function get($options = array()) {
 		global $HISTORY_DB;
-		if ($HISTORY_DB['USE'] == 'no') {
+		if ($HISTORY_DB['USE'] == 'yes') {
 			return $this->getByHistoryGluon($options);
 		} else {
 			return $this->getBySQL($options);
