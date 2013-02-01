@@ -42,7 +42,7 @@ class HistoryGluon
 		$ret = history_gluon_range_query($this->ctx, $itemid,
 		                                 $sec0, 0, $sec1, 0,
 		                                 $sortRequest, $numMaxEntries, $array);
-		if ($ret != $HGL_SUCCESS) {
+		if ($ret != HGL_SUCCESS) {
 			error_log("Failed to call history_gluon_range_query: " . $ret);
 			return null;
 		}
