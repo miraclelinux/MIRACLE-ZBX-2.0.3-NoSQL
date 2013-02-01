@@ -79,8 +79,28 @@ class CHistoryTest extends CApiTest {
 	 * @dataProvider providerGet
 	 */
 	public function testGet(array $object) {
+		global $HISTORY_DB;
+		$use_history_db_saved = $HISTORY_DB['USE'];
+		$HISTORY_DB['USE']  = 'no';
+
 		$actual = $this->api->get($object["data"]);
 		$this->assertEquals($object["expected"], $actual);
+
+		$HISTORY_DB['USE'] = $use_history_db_saved;
+	}
+
+	/**
+	 * @dataProvider providerGet
+	 */
+	public function testGetHistoryGluon(array $object) {
+		global $HISTORY_DB;
+		$use_history_db_saved = $HISTORY_DB['USE'];
+		$HISTORY_DB['USE']  = 'yes';
+
+		$actual = $this->api->get($object["data"]);
+		$this->assertEquals($object["expected"], $actual);
+
+		$HISTORY_DB['USE'] = $use_history_db_saved;
 	}
 }
 ?>
