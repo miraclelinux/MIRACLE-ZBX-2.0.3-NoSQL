@@ -24,9 +24,9 @@ class HistoryGluon
 	// public methods
 	// ------------------------------------------------------------------
 	public static function getInstance() {
-		if (is_null($instance))
-			$instance = new HistoryGluon();
-		return $instance;
+		if (is_null(self::$instance))
+			self::$instance = new HistoryGluon();
+		return self::$instance;
 	}
 
 	public function getHistory($itemid, $from_time, $to_time) {
