@@ -14,12 +14,65 @@ class Z extends ZBase {
 	}
 }
 
+class HistoryGluonWriter {
+	private static $instance = null;
+	private static $ctx = null;
+
+	public static function getInstance() {
+		if (is_null(self::$instance))
+			self::$instance = new HistoryGluonWriter();
+		return self::$instance;
+	}
+
+	public function setHistory($itemid, $type, $seconds, $nanoseconds, $value) {
+		switch($type) {
+			case ITEM_VALUE_TYPE_LOG:
+				// FIXME: not implemented in src/libs/zbxdbcache/dbcache.c
+				break;
+			case ITEM_VALUE_TYPE_TEXT:
+				// FIXME: not implemented in src/libs/zbxdbcache/dbcache.c
+				break;
+			case ITEM_VALUE_TYPE_STR:
+				history_gluon_add_string($this->ctx, $itemid,
+										 $seconds, $nanoseconds, $value);
+				break;
+			case ITEM_VALUE_TYPE_UINT64:
+				history_gluon_add_uint($this->ctx, $itemid,
+									  $seconds, $nanoseconds, $value);
+				break;
+			case ITEM_VALUE_TYPE_FLOAT:
+			default:
+				history_gluon_add_float($this->ctx, $itemid,
+										$seconds, $nanoseconds, $value);
+		}
+	}
+
+	public function __construct() {
+		global $HISTORY_DB;
+		if (!extension_loaded('History Gluon PHP Extension'))
+			dl("history_gluon.so");
+		$server = null;
+		$port = 0;
+		if (isset($HISTORY_DB['SERVER'])) 
+			$server = $HISTORY_DB['SERVER'];
+		if (isset($HISTORY_DB['PORT'])) 
+			$port = $HISTORY_DB['PORT'];
+		$ctx = 0;
+		$ret = history_gluon_create_context('zabbix', $server, $port, $ctx);
+		$this->ctx = $ctx;
+	}
+}
+
 class CHistoryTest extends CApiTest {
 	public function setUp() {
 		parent::setUp();
 
 		$this->setUpTestHost();
 		$this->api = API::History();
+
+		$writer = HistoryGluonWriter::getInstance();
+		// FIXME: should be unified with the data in provierGet()
+		$writer->setHistory(22188, 0, 1351090936, 549216402, 0.16000);
 	}
 
 	public function providerCreateValid() {
