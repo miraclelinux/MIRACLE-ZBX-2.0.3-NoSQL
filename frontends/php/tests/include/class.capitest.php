@@ -46,6 +46,7 @@ require_once dirname(__FILE__).'/../../api/classes/CHostInterface.php';
 require_once dirname(__FILE__).'/../../api/classes/CProxy.php';
 require_once dirname(__FILE__).'/../../api/classes/CGraph.php';
 require_once dirname(__FILE__).'/../../api/classes/CTrigger.php';
+require_once dirname(__FILE__).'/../../api/classes/CHistory.php';
 
 if (!function_exists('info')) {
 	function info($data) {

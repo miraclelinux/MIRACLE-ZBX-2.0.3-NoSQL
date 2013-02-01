@@ -22,6 +22,7 @@
 //require_once 'Framework/ClassTest.php';
 //require_once dirname(__FILE__).'/classes/class.cdrule.php';
 require_once dirname(__FILE__).'/classes/class.triggerexpressionTest.php';
+require_once dirname(__FILE__).'/classes/class.chistorytest.php';
 //require_once dirname(__FILE__).'/classes/class.citemtest.php';
 // ...
 //class Package_GeneralTests
@@ -29,6 +30,7 @@ class ApiTests {
 	public static function suite() {
 		$suite = new PHPUnit_Framework_TestSuite();
 		$suite->addTestSuite('class_triggerexpressionTest');
+		$suite->addTestSuite('CHistoryTest');
 //		$suite->addTestSuite('CItemTest');
 //		$suite->addTestSuite('CDRuleTest');
 
