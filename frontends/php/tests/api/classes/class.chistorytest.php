@@ -58,6 +58,12 @@ class CHistoryTest extends CApiTest {
 					),
 				),
 			),
+			array(
+				array(
+					"data" => array_merge($data1, array("history" => "1")),
+					"expected" => array(),
+				),
+			),
 		);
 	}
 
