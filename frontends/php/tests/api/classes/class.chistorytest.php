@@ -29,10 +29,13 @@ class CHistoryTest extends CApiTest {
 		return array (
 			array(
 				array(
-					"history" => 0,
-					"itemids" => array("22188"),
-					"time_from" => 1351090935,
-					"time_till" => 1351090937,
+					"data" => array(
+						"history" => 0,
+						"itemids" => array("22188"),
+						"time_from" => 1351090935,
+						"time_till" => 1351090937,
+					),
+					"expected" => 1,
 				),
 			),
 		);
@@ -50,9 +53,9 @@ class CHistoryTest extends CApiTest {
 	 * @dataProvider providerGet
 	 */
 	public function testGet(array $object) {
-		$actual = $this->api->get($object);
-
-		$this->assertCount(1, $actual, 'One of the objects has not been retrieved!');
+		$actual = $this->api->get($object["data"]);
+		$this->assertCount($object["expected"], $actual,
+						   'One of the objects has not been retrieved!');
 	}
 }
 ?>
