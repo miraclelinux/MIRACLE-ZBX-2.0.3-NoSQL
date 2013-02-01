@@ -26,22 +26,34 @@ class CHistoryTest extends CApiTest {
 	}
 
 	public function providerGet() {
+		$data1 = array (
+			"history" => 0,
+			"itemids" => array("22188"),
+			"time_from" => 1351090935,
+			"time_till" => 1351090937,
+		);
+
 		return array (
 			array(
 				array(
-					"data" => array(
-						"history" => 0,
-						"itemids" => array("22188"),
-						"time_from" => 1351090935,
-						"time_till" => 1351090937,
-						"output" => "extend"
-					),
+					"data" => array_merge($data1, array("output" => "extend")),
 					"expected" => array(
 						array(
 							"itemid" => "22188",
 							"clock" => "1351090936",
 							"value" => "0.16000",
 							"ns" => "549216402",
+						),
+					),
+				),
+			),
+			array(
+				array(
+					"data" => $data1,
+					"expected" => array(
+						array(
+							"itemid" => "22188",
+							"clock" => "1351090936",
 						),
 					),
 				),
