@@ -343,6 +343,10 @@ class CHistory extends CZBXAPI {
 		foreach ($options['itemids'] as $itemid) {
 			$data_array = $history_gluon->getHistory($itemid, $time_from, $time_till);
 
+			if (is_null($data_array)) {
+				continue;
+			}
+
 			foreach ($data_array["array"] as $data) {
 				$result[$idx]["itemid"] = $data["id"];
 				$result[$idx]["clock"] = $data["sec"];
