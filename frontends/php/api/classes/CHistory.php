@@ -320,6 +320,8 @@ class CHistory extends CZBXAPI {
 	private function getByHistoryGluon($options = array()) {
 		// FIXME: most features aren't implemented yet!
 
+		$options = $this->getMergedOptions($options);
+
 		if (!is_null($options['itemids'])) {
 			zbx_value2array($options['itemids']);
 		}
@@ -363,6 +365,37 @@ class CHistory extends CZBXAPI {
 		}
 
 		return $result;
+	}
+
+	private function getMergedOptions($options = array()) {
+		$defOptions = array(
+			'history'					=> ITEM_VALUE_TYPE_UINT64,
+			'nodeids'					=> null,
+			'hostids'					=> null,
+			'itemids'					=> null,
+			'triggerids'				=> null,
+			'editable'					=> null,
+			'nopermissions'				=> null,
+			// filter
+			'filter'					=> null,
+			'search'					=> null,
+			'searchByAny'				=> null,
+			'startSearch'				=> null,
+			'excludeSearch'				=> null,
+			'searchWildcardsEnabled'	=> null,
+			'time_from'					=> null,
+			'time_till'					=> null,
+			// output
+			'output'					=> API_OUTPUT_REFER,
+			'countOutput'				=> null,
+			'groupCount'				=> null,
+			'groupOutput'				=> null,
+			'preservekeys'				=> null,
+			'sortfield'					=> '',
+			'sortorder'					=> '',
+			'limit'						=> null
+		);
+		return zbx_array_merge($defOptions, $options);
 	}
 
 	public function create($items = array()) {
