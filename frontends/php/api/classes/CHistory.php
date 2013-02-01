@@ -346,8 +346,10 @@ class CHistory extends CZBXAPI {
 			foreach ($data_array["array"] as $data) {
 				$result[$idx]["itemid"] = $data["id"];
 				$result[$idx]["clock"] = $data["sec"];
-				$result[$idx]["ns"] = $data["ns"];
-				$result[$idx]["value"] = $data["value"];
+				if ($options['output'] == API_OUTPUT_EXTEND) {
+					$result[$idx]["ns"] = $data["ns"];
+					$result[$idx]["value"] = $data["value"];
+				}
 				$idx++;
 			}
 		}
