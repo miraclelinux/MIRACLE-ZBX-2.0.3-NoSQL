@@ -25,6 +25,19 @@ class CHistoryTest extends CApiTest {
 	public function providerCreateValid() {
 	}
 
+	public function providerGet() {
+		return array (
+			array(
+				array(
+					"history" => 0,
+					"itemids" => array("22188"),
+					"time_from" => 1351090935,
+					"time_till" => 1351090937,
+				),
+			),
+		);
+	}
+
 	public function testCreateValid() {
 		$this->markTestIncomplete("History doesn't have create method");
 	}
@@ -33,17 +46,13 @@ class CHistoryTest extends CApiTest {
 		$this->markTestIncomplete("History doesn't have delete method");
 	}
 
-	public function testGet() {
-		$rs = $this->api->get(
-			array(
-				  "history" => 0,
-				  "itemids" => array("22188"),
-				  "time_from" => 1351090935,
-				  "time_till" => 1351090937,
-			)
-		);
+	/**
+	 * @dataProvider providerGet
+	 */
+	public function testGet(array $object) {
+		$actual = $this->api->get($object);
 
-		$this->assertCount(1, $rs, 'One of the objects has not been retrieved!');
+		$this->assertCount(1, $actual, 'One of the objects has not been retrieved!');
 	}
 }
 ?>
