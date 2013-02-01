@@ -34,8 +34,16 @@ class CHistoryTest extends CApiTest {
 						"itemids" => array("22188"),
 						"time_from" => 1351090935,
 						"time_till" => 1351090937,
+						"output" => "extend"
 					),
-					"expected" => 1,
+					"expected" => array(
+						array(
+							"itemid" => "22188",
+							"clock" => "1351090936",
+							"value" => "0.16000",
+							"ns" => "549216402",
+						),
+					),
 				),
 			),
 		);
@@ -54,8 +62,7 @@ class CHistoryTest extends CApiTest {
 	 */
 	public function testGet(array $object) {
 		$actual = $this->api->get($object["data"]);
-		$this->assertCount($object["expected"], $actual,
-						   'One of the objects has not been retrieved!');
+		$this->assertEquals($object["expected"], $actual);
 	}
 }
 ?>
