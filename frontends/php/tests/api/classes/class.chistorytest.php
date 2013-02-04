@@ -14,24 +14,27 @@ class Z extends ZBase {
 	}
 }
 
-define("HISTORY_ITEMID", 0);
-define("HISTORY_CLOCK",  1);
-define("HISTORY_NS",     2);
-define("HISTORY_VALUE",  3);
+define("HISTORY_TYPE",   0);
+define("HISTORY_ITEMID", 1);
+define("HISTORY_CLOCK",  2);
+define("HISTORY_NS",     3);
+define("HISTORY_VALUE",  4);
 
 class CHistoryTest extends CApiTest {
 	static private $history = array(
-		array(22188, 1351090000, 000000000, 0.1500),
-		array(22188, 1351090934, 999999999, 0.1528),
-		array(22188, 1351090935, 000000000, 0.1529),
-		array(22188, 1351090935, 999999999, 0.1530),
-		array(22188, 1351090936, 549216402, 0.1600),
-		array(22188, 1351090936, 999999999, 0.1429),
-		array(22188, 1351090937, 000000000, 0.1541),
-		array(22188, 1351090937, 999999999, 0.1641),
-		array(22188, 1351090938, 000000000, 0.1642),
-		array(22188, 1351092000, 549216402, 0.2000),
-		array(22189, 1351090936, 549216402, 0.1600));
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090000, 000000000, 0.1500),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090934, 999999999, 0.1528),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090935, 000000000, 0.1529),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090935, 999999999, 0.1530),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090936, 549216402, 0.1600),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090936, 999999999, 0.1429),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090937, 000000000, 0.1541),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090937, 999999999, 0.1641),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351090938, 000000000, 0.1642),
+		array(ITEM_VALUE_TYPE_FLOAT, 22188, 1351092000, 549216402, 0.2000),
+		array(ITEM_VALUE_TYPE_FLOAT, 22189, 1351090936, 549216402, 0.1600),
+		array(ITEM_VALUE_TYPE_STR,   22188, 1351090936, 549216403, 'Test string in time range'),
+	);
 
 	public function setUp() {
 		parent::setUp();
@@ -44,22 +47,47 @@ class CHistoryTest extends CApiTest {
 	public function setUpHistoryDB() {
 		$writer = HistoryGluon::getInstance();
 		foreach (self::$history as $data) {
-			$writer->setHistory($data[HISTORY_ITEMID], 0, $data[HISTORY_CLOCK],
-								$data[HISTORY_NS], $data[HISTORY_VALUE]);
+			$writer->setHistory($data[HISTORY_ITEMID], $data[HISTORY_TYPE],
+								$data[HISTORY_CLOCK], $data[HISTORY_NS],
+								$data[HISTORY_VALUE]);
 			$result = $this->setSQLHistory($data);
 		}
 	}
 
 	public function setSQLHistory($history) {
+		$tableName = "history";
+		switch ($history[HISTORY_TYPE]) {
+		case ITEM_VALUE_TYPE_UINT64:
+			$tableName = "history_uint";
+			break;
+		case ITEM_VALUE_TYPE_STR:
+			$tableName = "history_str";
+			break;
+		case ITEM_VALUE_TYPE_LOG:
+			$tableName = "history_log";
+			break;
+		case ITEM_VALUE_TYPE_TEXT:
+			$tableName = "history_text";
+			break;
+		case ITEM_VALUE_TYPE_FLOAT:
+		default:
+			break;
+		}
 		return DBexecute(
-				'INSERT INTO history (itemid, clock, value, ns) VALUES(' .
-				$history[HISTORY_ITEMID] . ',' . $history[HISTORY_CLOCK] . ',' .
-				$history[HISTORY_VALUE] . ',' . $history[HISTORY_NS] . ')');
+				'INSERT INTO ' . $tableName . ' (itemid, clock, value, ns) VALUES(' .
+				$history[HISTORY_ITEMID] . ',' . $history[HISTORY_CLOCK] . ',"' .
+				$history[HISTORY_VALUE] . '",' . $history[HISTORY_NS] . ')');
 	}
 
 	public function tearDown() {
 		$result = DBexecute('DELETE FROM history');
+		$result = DBexecute('DELETE FROM history_uint');
+		$result = DBexecute('DELETE FROM history_str');
+		$result = DBexecute('DELETE FROM history_text');
+		$result = DBexecute('DELETE FROM history_log');
 		parent::tearDown();
+
+
 	}
 
 	public function providerCreateValid() {
@@ -81,13 +109,13 @@ class CHistoryTest extends CApiTest {
 
 	public function providerGet() {
 		$query_simple = array (
-			"history" => 0,
+			"history" => ITEM_VALUE_TYPE_FLOAT,
 			"itemids" => array("22188"),
 			"time_from" => 1351090935,
 			"time_till" => 1351090937,
 		);
 		$query_extend = array_merge($query_simple, array("output" => "extend"));
-		$query_unmatch = array_merge($query_simple, array("history" => "1"));
+		$query_unmatch = array_merge($query_simple, array("history" => ITEM_VALUE_TYPE_LOG));
 		$query_2items = $query_simple;
 		$query_2items["itemids"] = array("22188", "22189");
 
