@@ -94,7 +94,7 @@ class CHistoryTest extends CApiTest {
 	private function getExpected($histories, $extend) {
 		$expected = array();
 		foreach ($histories as $history) {
-			$element = array("itemid" =>$history[HISTORY_ITEMID],
+			$element = array("itemid" => $history[HISTORY_ITEMID],
 							 "clock" => $history[HISTORY_CLOCK]);
 			if ($extend) {
 				$element["value"] = $history[HISTORY_VALUE];
@@ -116,6 +116,10 @@ class CHistoryTest extends CApiTest {
 		$query_unmatch = array_merge($query_simple, array("history" => ITEM_VALUE_TYPE_LOG));
 		$query_2items = $query_simple;
 		$query_2items["itemids"] = array("22188", "22189");
+		$query_notime = array (
+			"history" => ITEM_VALUE_TYPE_FLOAT,
+			"itemids" => array("22188"),
+		);
 
 		$h = &self::$history;
 		$targetBegin = 2;
@@ -126,6 +130,7 @@ class CHistoryTest extends CApiTest {
 		$expected_simple = $this->getExpected($targetHistories, FALSE);
 		$expected_extend = $this->getExpected($targetHistories, TRUE);
 		$expected_2items = $this->getExpected($targetHistoriesForAllItems, FALSE);
+		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE);
 
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {
@@ -141,6 +146,7 @@ class CHistoryTest extends CApiTest {
 			dataSet($query_extend, $expected_extend),
 			dataSet($query_unmatch, array()),
 			dataSet($query_2items, $expected_2items),
+			dataSet($query_notime, $expected_notime),
 		);
 	}
 
