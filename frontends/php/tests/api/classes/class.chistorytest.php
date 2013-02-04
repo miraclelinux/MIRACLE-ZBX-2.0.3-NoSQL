@@ -73,31 +73,34 @@ class CHistoryTest extends CApiTest {
 	}
 
 	public function providerGet() {
-		$query1 = array (
+		$query_simple = array (
 			"history" => 0,
 			"itemids" => array("22188"),
 			"time_from" => 1351090935,
 			"time_till" => 1351090937,
 		);
-		$expected1 = $this->getExpected(array(self::$history[1]), FALSE);
-		$expected2 = $this->getExpected(array(self::$history[1]), TRUE);
+		$query_extend = array_merge($query_simple, array("output" => "extend"));
+		$query_unmatch = array_merge($query_simple, array("history" => "1"));
+
+		$expected_simple = $this->getExpected(array(self::$history[1]), FALSE);
+		$expected_extend = $this->getExpected(array(self::$history[1]), TRUE);
 
 		return array (
 			array(
 				array(
-					"query" => $query1,
-					"expected" => $expected1,
+					"query" => $query_simple,
+					"expected" => $expected_simple,
 				),
 			),
 			array(
 				array(
-					"query" => array_merge($query1, array("output" => "extend")),
-					"expected" => $expected2,
+					"query" => $query_extend,
+					"expected" => $expected_extend,
 				),
 			),
 			array(
 				array(
-					"query" => array_merge($query1, array("history" => "1")),
+					"query" => $query_unmatch,
 					"expected" => array(),
 				),
 			),
