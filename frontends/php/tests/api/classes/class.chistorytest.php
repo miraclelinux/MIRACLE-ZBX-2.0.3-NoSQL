@@ -31,10 +31,12 @@ class CHistoryTest extends CApiTest {
 
 		$writer = HistoryGluon::getInstance();
 		foreach (self::$history as $data) {
-			$writer->setHistory($data[HISTORY_ITEMID], 0, $data[HISTORY_CLOCK], $data[HISTORY_NS], $data[HISTORY_VALUE]);
+			$writer->setHistory($data[HISTORY_ITEMID], 0, $data[HISTORY_CLOCK],
+								$data[HISTORY_NS], $data[HISTORY_VALUE]);
 			$result = DBexecute(
-				'INSERT INTO history (itemid, clock, value, ns)'.
-				' VALUES (' . $data[HISTORY_ITEMID] . ',' . $data[HISTORY_CLOCK] . ',' . $data[HISTORY_VALUE] . ',' . $data[HISTORY_NS] . ')');
+				'INSERT INTO history (itemid, clock, value, ns) VALUES(' .
+				$data[HISTORY_ITEMID] . ',' . $data[HISTORY_CLOCK] . ',' .
+				$data[HISTORY_VALUE] . ',' . $data[HISTORY_NS] . ')');
 		}
 	}
 
