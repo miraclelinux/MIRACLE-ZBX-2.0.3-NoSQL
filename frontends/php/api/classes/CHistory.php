@@ -337,6 +337,7 @@ class CHistory extends CZBXAPI {
 		} else {
 			$time_till = $options['time_till'];
 		}
+		$time_till += 1;
 
 		$history_gluon = HistoryGluon::getInstance();
 		$result = array();
