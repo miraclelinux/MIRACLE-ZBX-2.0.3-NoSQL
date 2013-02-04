@@ -64,15 +64,24 @@ class HistoryGluonWriter {
 }
 
 class CHistoryTest extends CApiTest {
+	// FIXME: should be unified with the data in provierGet()
+	static private $historyFixture = array(
+		array(22188, 1351090936, 549216402, 0.16000));
+
 	public function setUp() {
 		parent::setUp();
 
 		$this->setUpTestHost();
 		$this->api = API::History();
 
+        $result = DBexecute('DELETE FROM history');
 		$writer = HistoryGluonWriter::getInstance();
-		// FIXME: should be unified with the data in provierGet()
-		$writer->setHistory(22188, 0, 1351090936, 549216402, 0.16000);
+		foreach (self::$historyFixture as $data) {
+			$writer->setHistory($data[0], 0, $data[1], $data[2], $data[3]);
+			$result = DBexecute(
+				'INSERT INTO history (itemid, clock, value, ns)'.
+				' VALUES (' . $data[0] . ',' . $data[1] . ',' . $data[3] . ',' . $data[2] . ')');
+		}
 	}
 
 	public function providerCreateValid() {
