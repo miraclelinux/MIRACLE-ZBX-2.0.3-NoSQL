@@ -21,10 +21,17 @@ define("HISTORY_VALUE",  3);
 
 class CHistoryTest extends CApiTest {
 	static private $history = array(
-		array(22188, 1351090000, 000000000, 0.15000),
-		array(22188, 1351090936, 549216402, 0.16000),
-		array(22189, 1351090936, 549216402, 0.16000),
-		array(22188, 1351092000, 549216402, 0.20000));
+		array(22188, 1351090000, 000000000, 0.1500),
+		array(22188, 1351090934, 999999999, 0.1528),
+		array(22188, 1351090935, 000000000, 0.1529),
+		array(22188, 1351090935, 999999999, 0.1530),
+		array(22188, 1351090936, 549216402, 0.1600),
+		array(22188, 1351090936, 999999999, 0.1429),
+		array(22188, 1351090937, 000000000, 0.1541),
+		array(22188, 1351090937, 999999999, 0.1641),
+		array(22188, 1351090938, 000000000, 0.1642),
+		array(22188, 1351092000, 549216402, 0.2000),
+		array(22189, 1351090936, 549216402, 0.1600));
 
 	public function setUp() {
 		parent::setUp();
@@ -61,7 +68,7 @@ class CHistoryTest extends CApiTest {
 	private function getExpected($histories, $extend) {
 		$expected = array();
 		foreach ($histories as $history) {
-			$element = array("itemid" => $history[HISTORY_ITEMID],
+			$element = array("itemid" =>$history[HISTORY_ITEMID],
 							 "clock" => $history[HISTORY_CLOCK]);
 			if ($extend) {
 				$element["value"] = $history[HISTORY_VALUE];
@@ -84,9 +91,15 @@ class CHistoryTest extends CApiTest {
 		$query_2items = $query_simple;
 		$query_2items["itemids"] = array("22188", "22189");
 
-		$expected_simple = $this->getExpected(array(self::$history[1]), FALSE);
-		$expected_extend = $this->getExpected(array(self::$history[1]), TRUE);
-		$expected_2items = $this->getExpected(array(self::$history[1], self::$history[2]), FALSE);
+		$h = &self::$history;
+		$targetBegin = 2;
+		$targetEnd = 7;
+		$targetHistories = array_slice($h, $targetBegin, $targetEnd - $targetBegin + 1);
+		$targetHistoriesForAllItems = array_merge($targetHistories, array($h[10]));
+
+		$expected_simple = $this->getExpected($targetHistories, FALSE);
+		$expected_extend = $this->getExpected($targetHistories, TRUE);
+		$expected_2items = $this->getExpected($targetHistoriesForAllItems, FALSE);
 
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {
