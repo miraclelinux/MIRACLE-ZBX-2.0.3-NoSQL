@@ -88,7 +88,7 @@ class CHistoryTest extends CApiTest {
 	}
 
 	public function providerGet() {
-		$data1 = array (
+		$query1 = array (
 			"history" => 0,
 			"itemids" => array("22188"),
 			"time_from" => 1351090935,
@@ -98,7 +98,7 @@ class CHistoryTest extends CApiTest {
 		return array (
 			array(
 				array(
-					"query" => array_merge($data1, array("output" => "extend")),
+					"query" => array_merge($query1, array("output" => "extend")),
 					"expected" => array(
 						array(
 							"itemid" => "22188",
@@ -111,7 +111,7 @@ class CHistoryTest extends CApiTest {
 			),
 			array(
 				array(
-					"query" => $data1,
+					"query" => $query1,
 					"expected" => array(
 						array(
 							"itemid" => "22188",
@@ -122,7 +122,7 @@ class CHistoryTest extends CApiTest {
 			),
 			array(
 				array(
-					"query" => array_merge($data1, array("history" => "1")),
+					"query" => array_merge($query1, array("history" => "1")),
 					"expected" => array(),
 				),
 			),
