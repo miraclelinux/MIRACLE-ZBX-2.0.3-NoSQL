@@ -91,11 +91,13 @@ class CHistoryTest extends CApiTest {
 	public function providerCreateValid() {
 	}
 
-	private function getExpected($histories, $extend) {
+	private function getExpected($histories, $extend, $noTime = FALSE) {
 		$expected = array();
 		foreach ($histories as $history) {
-			$element = array("itemid" => (string) $history[HISTORY_ITEMID],
-							 "clock" => (string) $history[HISTORY_CLOCK]);
+			$element = array("itemid" => (string) $history[HISTORY_ITEMID]);
+			if (!$noTime) {
+				$element["clock"] = (string) $history[HISTORY_CLOCK];
+			}
 			if ($extend) {
 				$element["value"] = (string) $history[HISTORY_VALUE];
 				$element["ns"] = (string) $history[HISTORY_NS];
@@ -130,7 +132,7 @@ class CHistoryTest extends CApiTest {
 		$expected_simple = $this->getExpected($targetHistories, FALSE);
 		$expected_extend = $this->getExpected($targetHistories, TRUE);
 		$expected_2items = $this->getExpected($targetHistoriesForAllItems, FALSE);
-		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE);
+		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE, TRUE);
 
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {

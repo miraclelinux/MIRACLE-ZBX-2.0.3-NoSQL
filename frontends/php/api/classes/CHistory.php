@@ -321,6 +321,7 @@ class CHistory extends CZBXAPI {
 		// FIXME: most features aren't implemented yet!
 
 		$options = $this->getMergedOptions($options);
+		$hasTimeRange = FALSE;
 
 		if (!is_null($options['itemids'])) {
 			zbx_value2array($options['itemids']);
@@ -330,12 +331,14 @@ class CHistory extends CZBXAPI {
 			$time_from = 0;
 		} else {
 			$time_from = $options['time_from'];
+			$hasTimeRange = TRUE;
 		}
 
 		if (is_null($options['time_till'])) {
 			$time_till = time(null);
 		} else {
 			$time_till = $options['time_till'];
+			$hasTimeRange = TRUE;
 		}
 		$time_till += 1;
 
@@ -354,11 +357,13 @@ class CHistory extends CZBXAPI {
 				if (!$this->isValidDataType($options["history"], $data["value"]))
 					continue;
 
-				$result[$idx]["itemid"] = $data["id"];
-				$result[$idx]["clock"] = $data["sec"];
+				$result[$idx]["itemid"] = (string) $data["id"];
+				if ($hasTimeRange) {
+					$result[$idx]["clock"] = (string) $data["sec"];
+				}
 				if ($options['output'] == API_OUTPUT_EXTEND) {
-					$result[$idx]["ns"] = $data["ns"];
-					$result[$idx]["value"] = $data["value"];
+					$result[$idx]["ns"] = (string) $data["ns"];
+					$result[$idx]["value"] = (string) $data["value"];
 				}
 				$idx++;
 			}
