@@ -14,8 +14,12 @@ class Z extends ZBase {
 	}
 }
 
+define("HISTORY_ITEMID", 0);
+define("HISTORY_CLOCK",  1);
+define("HISTORY_NS",     2);
+define("HISTORY_VALUE",  3);
+
 class CHistoryTest extends CApiTest {
-	// FIXME: should be unified with the data in provierGet()
 	static private $history = array(
 		array(22188, 1351090936, 549216402, 0.16000));
 
@@ -27,10 +31,10 @@ class CHistoryTest extends CApiTest {
 
 		$writer = HistoryGluon::getInstance();
 		foreach (self::$history as $data) {
-			$writer->setHistory($data[0], 0, $data[1], $data[2], $data[3]);
+			$writer->setHistory($data[HISTORY_ITEMID], 0, $data[HISTORY_CLOCK], $data[HISTORY_NS], $data[HISTORY_VALUE]);
 			$result = DBexecute(
 				'INSERT INTO history (itemid, clock, value, ns)'.
-				' VALUES (' . $data[0] . ',' . $data[1] . ',' . $data[3] . ',' . $data[2] . ')');
+				' VALUES (' . $data[HISTORY_ITEMID] . ',' . $data[HISTORY_CLOCK] . ',' . $data[HISTORY_VALUE] . ',' . $data[HISTORY_NS] . ')');
 		}
 	}
 
@@ -42,6 +46,20 @@ class CHistoryTest extends CApiTest {
 	public function providerCreateValid() {
 	}
 
+	private function getExpected($histories, $extend) {
+		$expected = array();
+		foreach ($histories as $history) {
+			$element = array("itemid" => $history[HISTORY_ITEMID],
+							 "clock" => $history[HISTORY_CLOCK]);
+			if ($extend) {
+				$element["value"] = $history[HISTORY_VALUE];
+				$element["ns"] = $history[HISTORY_NS];
+			}
+			array_push($expected, $element);
+		}
+		return $expected;
+	}
+
 	public function providerGet() {
 		$query1 = array (
 			"history" => 0,
@@ -49,30 +67,20 @@ class CHistoryTest extends CApiTest {
 			"time_from" => 1351090935,
 			"time_till" => 1351090937,
 		);
+		$expected1 = $this->getExpected(array(self::$history[0]), FALSE);
+		$expected2 = $this->getExpected(array(self::$history[0]), TRUE);
 
 		return array (
 			array(
 				array(
-					"query" => array_merge($query1, array("output" => "extend")),
-					"expected" => array(
-						array(
-							"itemid" => "22188",
-							"clock" => "1351090936",
-							"value" => "0.16000",
-							"ns" => "549216402",
-						),
-					),
+					"query" => $query1,
+					"expected" => $expected1,
 				),
 			),
 			array(
 				array(
-					"query" => $query1,
-					"expected" => array(
-						array(
-							"itemid" => "22188",
-							"clock" => "1351090936",
-						),
-					),
+					"query" => array_merge($query1, array("output" => "extend")),
+					"expected" => $expected2,
 				),
 			),
 			array(
