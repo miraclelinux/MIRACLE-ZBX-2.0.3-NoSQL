@@ -86,8 +86,6 @@ class CHistoryTest extends CApiTest {
 		$result = DBexecute('DELETE FROM history_text');
 		$result = DBexecute('DELETE FROM history_log');
 		parent::tearDown();
-
-
 	}
 
 	public function providerCreateValid() {
