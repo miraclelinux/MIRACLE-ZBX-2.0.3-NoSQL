@@ -21,7 +21,10 @@ define("HISTORY_VALUE",  3);
 
 class CHistoryTest extends CApiTest {
 	static private $history = array(
-		array(22188, 1351090936, 549216402, 0.16000));
+		array(22188, 1351090000, 000000000, 0.15000),
+		array(22188, 1351090936, 549216402, 0.16000),
+		array(22189, 1351090936, 549216402, 0.16000),
+		array(22188, 1351092000, 549216402, 0.20000));
 
 	public function setUp() {
 		parent::setUp();
@@ -69,8 +72,8 @@ class CHistoryTest extends CApiTest {
 			"time_from" => 1351090935,
 			"time_till" => 1351090937,
 		);
-		$expected1 = $this->getExpected(array(self::$history[0]), FALSE);
-		$expected2 = $this->getExpected(array(self::$history[0]), TRUE);
+		$expected1 = $this->getExpected(array(self::$history[1]), FALSE);
+		$expected2 = $this->getExpected(array(self::$history[1]), TRUE);
 
 		return array (
 			array(
