@@ -25,7 +25,6 @@ class CHistoryTest extends CApiTest {
 		$this->setUpTestHost();
 		$this->api = API::History();
 
-        $result = DBexecute('DELETE FROM history');
 		$writer = HistoryGluon::getInstance();
 		foreach (self::$historyFixture as $data) {
 			$writer->setHistory($data[0], 0, $data[1], $data[2], $data[3]);
@@ -33,6 +32,11 @@ class CHistoryTest extends CApiTest {
 				'INSERT INTO history (itemid, clock, value, ns)'.
 				' VALUES (' . $data[0] . ',' . $data[1] . ',' . $data[3] . ',' . $data[2] . ')');
 		}
+	}
+
+	public function tearDown() {
+		$result = DBexecute('DELETE FROM history');
+		parent::tearDown();
 	}
 
 	public function providerCreateValid() {
