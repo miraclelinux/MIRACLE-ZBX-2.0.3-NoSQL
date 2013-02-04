@@ -81,9 +81,12 @@ class CHistoryTest extends CApiTest {
 		);
 		$query_extend = array_merge($query_simple, array("output" => "extend"));
 		$query_unmatch = array_merge($query_simple, array("history" => "1"));
+		$query_2items = $query_simple;
+		$query_2items["itemids"] = array("22188", "22189");
 
 		$expected_simple = $this->getExpected(array(self::$history[1]), FALSE);
 		$expected_extend = $this->getExpected(array(self::$history[1]), TRUE);
+		$expected_2items = $this->getExpected(array(self::$history[1], self::$history[2]), FALSE);
 
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {
@@ -98,6 +101,7 @@ class CHistoryTest extends CApiTest {
 			dataSet($query_simple, $expected_simple),
 			dataSet($query_extend, $expected_extend),
 			dataSet($query_unmatch, array()),
+			dataSet($query_2items, $expected_2items),
 		);
 	}
 
