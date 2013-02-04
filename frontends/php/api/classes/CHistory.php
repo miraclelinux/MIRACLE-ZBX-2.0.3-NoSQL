@@ -351,6 +351,9 @@ class CHistory extends CZBXAPI {
 			}
 
 			foreach ($data_array["array"] as $data) {
+				if (!$this->isValidDataType($options["history"], $data["value"]))
+					continue;
+
 				$result[$idx]["itemid"] = $data["id"];
 				$result[$idx]["clock"] = $data["sec"];
 				if ($options['output'] == API_OUTPUT_EXTEND) {
@@ -366,6 +369,25 @@ class CHistory extends CZBXAPI {
 		}
 
 		return $result;
+	}
+
+	protected function isValidDataType($expectedType, $value) {
+		$actualType = gettype($value);
+		switch ($expectedType) {
+			case ITEM_VALUE_TYPE_LOG:
+				// FIXME: not implemented in src/libs/zbxdbcache/dbcache.c
+				return FALSE;
+			case ITEM_VALUE_TYPE_TEXT:
+				// FIXME: not implemented in src/libs/zbxdbcache/dbcache.c
+				return FALSE;
+			case ITEM_VALUE_TYPE_STR:
+				return ($actualType == "string");
+			case ITEM_VALUE_TYPE_UINT64:
+				return ($actualType == "integer");
+			case ITEM_VALUE_TYPE_FLOAT:
+			default:
+				return ($actualType == "double");
+		}
 	}
 
 	private function getMergedOptions($options = array()) {
