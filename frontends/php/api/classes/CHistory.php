@@ -54,7 +54,7 @@ class CHistory extends CZBXAPI {
 		}
 	}
 
-	private function getBySQL($options = array()) {
+	protected function getBySQL($options = array()) {
 		$result = array();
 		$nodeCheck = false;
 
@@ -317,7 +317,7 @@ class CHistory extends CZBXAPI {
 		return $result;
 	}
 
-	private function getByHistoryGluon($options = array()) {
+	protected function getByHistoryGluon($options = array()) {
 		// FIXME: most features aren't implemented yet!
 
 		$options = $this->getMergedOptions($options);
@@ -390,7 +390,7 @@ class CHistory extends CZBXAPI {
 		}
 	}
 
-	private function getMergedOptions($options = array()) {
+	protected function getMergedOptions($options = array()) {
 		$defOptions = array(
 			'history'					=> ITEM_VALUE_TYPE_UINT64,
 			'nodeids'					=> null,
