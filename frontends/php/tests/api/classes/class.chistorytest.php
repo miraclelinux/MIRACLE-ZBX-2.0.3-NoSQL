@@ -85,25 +85,19 @@ class CHistoryTest extends CApiTest {
 		$expected_simple = $this->getExpected(array(self::$history[1]), FALSE);
 		$expected_extend = $this->getExpected(array(self::$history[1]), TRUE);
 
+		if (!function_exists(dataSet)) {
+			function dataSet($query, $expected) {
+				return array(
+					array("query" => $query,
+						  "expected" => $expected),
+				);
+			}
+		}
+
 		return array (
-			array(
-				array(
-					"query" => $query_simple,
-					"expected" => $expected_simple,
-				),
-			),
-			array(
-				array(
-					"query" => $query_extend,
-					"expected" => $expected_extend,
-				),
-			),
-			array(
-				array(
-					"query" => $query_unmatch,
-					"expected" => array(),
-				),
-			),
+			dataSet($query_simple, $expected_simple),
+			dataSet($query_extend, $expected_extend),
+			dataSet($query_unmatch, array()),
 		);
 	}
 
