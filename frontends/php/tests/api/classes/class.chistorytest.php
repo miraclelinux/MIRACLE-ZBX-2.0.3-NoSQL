@@ -30,17 +30,24 @@ class CHistoryTest extends CApiTest {
 		parent::setUp();
 
 		$this->setUpTestHost();
+		$this->setUpHistoryDB();
 		$this->api = API::History();
+	}
 
+	public function setUpHistoryDB() {
 		$writer = HistoryGluon::getInstance();
 		foreach (self::$history as $data) {
 			$writer->setHistory($data[HISTORY_ITEMID], 0, $data[HISTORY_CLOCK],
 								$data[HISTORY_NS], $data[HISTORY_VALUE]);
-			$result = DBexecute(
-				'INSERT INTO history (itemid, clock, value, ns) VALUES(' .
-				$data[HISTORY_ITEMID] . ',' . $data[HISTORY_CLOCK] . ',' .
-				$data[HISTORY_VALUE] . ',' . $data[HISTORY_NS] . ')');
+			$result = $this->setSQLHistory($data);
 		}
+	}
+
+	public function setSQLHistory($history) {
+		return DBexecute(
+				'INSERT INTO history (itemid, clock, value, ns) VALUES(' .
+				$history[HISTORY_ITEMID] . ',' . $history[HISTORY_CLOCK] . ',' .
+				$history[HISTORY_VALUE] . ',' . $history[HISTORY_NS] . ')');
 	}
 
 	public function tearDown() {
