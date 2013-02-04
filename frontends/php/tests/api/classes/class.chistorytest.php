@@ -16,7 +16,7 @@ class Z extends ZBase {
 
 class CHistoryTest extends CApiTest {
 	// FIXME: should be unified with the data in provierGet()
-	static private $historyFixture = array(
+	static private $history = array(
 		array(22188, 1351090936, 549216402, 0.16000));
 
 	public function setUp() {
@@ -26,7 +26,7 @@ class CHistoryTest extends CApiTest {
 		$this->api = API::History();
 
 		$writer = HistoryGluon::getInstance();
-		foreach (self::$historyFixture as $data) {
+		foreach (self::$history as $data) {
 			$writer->setHistory($data[0], 0, $data[1], $data[2], $data[3]);
 			$result = DBexecute(
 				'INSERT INTO history (itemid, clock, value, ns)'.
