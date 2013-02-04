@@ -98,7 +98,7 @@ class CHistoryTest extends CApiTest {
 		return array (
 			array(
 				array(
-					"data" => array_merge($data1, array("output" => "extend")),
+					"query" => array_merge($data1, array("output" => "extend")),
 					"expected" => array(
 						array(
 							"itemid" => "22188",
@@ -111,7 +111,7 @@ class CHistoryTest extends CApiTest {
 			),
 			array(
 				array(
-					"data" => $data1,
+					"query" => $data1,
 					"expected" => array(
 						array(
 							"itemid" => "22188",
@@ -122,7 +122,7 @@ class CHistoryTest extends CApiTest {
 			),
 			array(
 				array(
-					"data" => array_merge($data1, array("history" => "1")),
+					"query" => array_merge($data1, array("history" => "1")),
 					"expected" => array(),
 				),
 			),
@@ -146,7 +146,7 @@ class CHistoryTest extends CApiTest {
 			$HISTORY_DB['USE']  = 'no';
 		}
 
-		$actual = $this->api->get($object["data"]);
+		$actual = $this->api->get($object["query"]);
 		$this->assertEquals($object["expected"], $actual);
 
 		$HISTORY_DB['USE'] = $use_history_db_saved;
