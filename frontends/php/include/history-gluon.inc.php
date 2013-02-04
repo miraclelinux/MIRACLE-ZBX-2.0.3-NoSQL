@@ -49,6 +49,29 @@ class HistoryGluon
 		return $array;
 	}
 
+	public function setHistory($itemid, $type, $seconds, $nanoseconds, $value) {
+		switch($type) {
+			case ITEM_VALUE_TYPE_LOG:
+				// FIXME: not implemented in src/libs/zbxdbcache/dbcache.c
+				break;
+			case ITEM_VALUE_TYPE_TEXT:
+				// FIXME: not implemented in src/libs/zbxdbcache/dbcache.c
+				break;
+			case ITEM_VALUE_TYPE_STR:
+				history_gluon_add_string($this->ctx, $itemid,
+										 $seconds, $nanoseconds, $value);
+				break;
+			case ITEM_VALUE_TYPE_UINT64:
+				history_gluon_add_uint($this->ctx, $itemid,
+									  $seconds, $nanoseconds, $value);
+				break;
+			case ITEM_VALUE_TYPE_FLOAT:
+			default:
+				history_gluon_add_float($this->ctx, $itemid,
+										$seconds, $nanoseconds, $value);
+		}
+	}
+
 	public function calcStatisticalParam(&$data_arr, $amp, $ofs, $duration) {
 		$row_arr = array();
 		$i_idx_map = array();
