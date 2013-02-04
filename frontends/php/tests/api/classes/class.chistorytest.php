@@ -94,11 +94,11 @@ class CHistoryTest extends CApiTest {
 	private function getExpected($histories, $extend) {
 		$expected = array();
 		foreach ($histories as $history) {
-			$element = array("itemid" => $history[HISTORY_ITEMID],
-							 "clock" => $history[HISTORY_CLOCK]);
+			$element = array("itemid" => (string) $history[HISTORY_ITEMID],
+							 "clock" => (string) $history[HISTORY_CLOCK]);
 			if ($extend) {
-				$element["value"] = $history[HISTORY_VALUE];
-				$element["ns"] = $history[HISTORY_NS];
+				$element["value"] = (string) $history[HISTORY_VALUE];
+				$element["ns"] = (string) $history[HISTORY_NS];
 			}
 			array_push($expected, $element);
 		}
