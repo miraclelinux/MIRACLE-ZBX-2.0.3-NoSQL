@@ -143,6 +143,7 @@ class CHistoryTest extends CApiTest {
 			'time_from' => 1351090935,
 			'time_till' => 1351090937,
 		);
+		$query_count = array_merge($query_known_hosts, array('countOutput' => 'true'));
 
 		$h = &self::$history;
 		$targetBegin = 2;
@@ -168,6 +169,7 @@ class CHistoryTest extends CApiTest {
 
 		return array (
 			$dataSet($query_simple, $expected_simple),
+			$dataSet($query_count, array('rowscount' => 6)),
 			$dataSet($query_extend, $expected_extend),
 			$dataSet($query_unmatch, array()),
 			$dataSet($query_2items, $expected_2items),

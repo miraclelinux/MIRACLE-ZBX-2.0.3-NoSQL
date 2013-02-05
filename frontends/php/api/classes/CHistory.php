@@ -377,7 +377,11 @@ class CHistory extends CZBXAPI {
 			$result = zbx_cleanHashes($result);
 		}
 
-		return $result;
+		if (isset($options['countOutput'])) {
+			return array('rowscount' => count($result));
+		} else {
+			return $result;
+		}
 	}
 
 	protected function isRequiredValueType($value, $requiredType) {
