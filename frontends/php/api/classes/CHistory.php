@@ -351,17 +351,17 @@ class CHistory extends CZBXAPI {
 				continue;
 			}
 
-			foreach ($data_array["array"] as $data) {
-				if (!$this->isValidDataType($options["history"], $data["value"]))
+			foreach ($data_array['array'] as $data) {
+				if (!$this->isValidDataType($options['history'], $data['value']))
 					continue;
 
-				$result[$idx]["itemid"] = (string) $data["id"];
+				$result[$idx]['itemid'] = (string) $data['id'];
 				if ($hasTimeRange) {
-					$result[$idx]["clock"] = (string) $data["sec"];
+					$result[$idx]['clock'] = (string) $data['sec'];
 				}
 				if ($options['output'] == API_OUTPUT_EXTEND) {
-					$result[$idx]["ns"] = (string) $data["ns"];
-					$result[$idx]["value"] = (string) $data["value"];
+					$result[$idx]['ns'] = (string) $data['ns'];
+					$result[$idx]['value'] = (string) $data['value'];
 				}
 				$idx++;
 			}
@@ -384,12 +384,12 @@ class CHistory extends CZBXAPI {
 				// FIXME: not implemented in src/libs/zbxdbcache/dbcache.c
 				return FALSE;
 			case ITEM_VALUE_TYPE_STR:
-				return ($actualType == "string");
+				return ($actualType == 'string');
 			case ITEM_VALUE_TYPE_UINT64:
-				return ($actualType == "integer");
+				return ($actualType == 'integer');
 			case ITEM_VALUE_TYPE_FLOAT:
 			default:
-				return ($actualType == "double");
+				return ($actualType == 'double');
 		}
 	}
 
@@ -434,7 +434,7 @@ class CHistory extends CZBXAPI {
 			$itemids = array();
 			$items = API::Item()->get();
 			foreach($items as $item) {
-				array_push($itemids, $item["itemid"]);
+				array_push($itemids, $item['itemid']);
 			}
 			return $itemids;
 		}
