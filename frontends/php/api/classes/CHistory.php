@@ -323,9 +323,7 @@ class CHistory extends CZBXAPI {
 		$options = $this->getMergedOptions($options);
 		$hasTimeRange = FALSE;
 
-		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
-		}
+		$itemids = $this->getItems($options);
 
 		if (is_null($options['time_from'])) {
 			$time_from = 0;
@@ -346,7 +344,7 @@ class CHistory extends CZBXAPI {
 		$result = array();
 		$idx = 0;
 
-		foreach ($options['itemids'] as $itemid) {
+		foreach ($itemids as $itemid) {
 			$data_array = $history_gluon->getHistory($itemid, $time_from, $time_till);
 
 			if (is_null($data_array)) {
@@ -424,6 +422,22 @@ class CHistory extends CZBXAPI {
 			'limit'						=> null
 		);
 		return zbx_array_merge($defOptions, $options);
+	}
+
+	protected function getItems($options) {
+		// FIXME: query items by CItem
+
+		if (!is_null($options['itemids'])) {
+			zbx_value2array($options['itemids']);
+			return $options['itemids'];
+		} else {
+			$itemids = array();
+			$items = API::Item()->get();
+			foreach($items as $item) {
+				array_push($itemids, $item["itemid"]);
+			}
+			return $itemids;
+		}
 	}
 
 	public function create($items = array()) {
