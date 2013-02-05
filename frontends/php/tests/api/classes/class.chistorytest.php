@@ -92,7 +92,7 @@ class CHistoryTest extends CApiTest {
 	public function providerCreateValid() {
 	}
 
-	private function getExpected($histories, $extend, $noTime = FALSE) {
+	private function getExpected($histories, $extend, $noTime = FALSE, $hosts = null) {
 		$expected = array();
 		foreach ($histories as $history) {
 			$element = array('itemid' => (string) $history[HISTORY_ITEMID]);
@@ -102,6 +102,9 @@ class CHistoryTest extends CApiTest {
 			if ($extend) {
 				$element['value'] = (string) $history[HISTORY_VALUE];
 				$element['ns'] = (string) $history[HISTORY_NS];
+			}
+			if (isset($hosts)) {
+				$element['hosts'] = $hosts;
 			}
 			array_push($expected, $element);
 		}
@@ -128,6 +131,18 @@ class CHistoryTest extends CApiTest {
 			'time_from' => 1351090935,
 			'time_till' => 1351090937,
 		);
+		$query_unknown_hosts = array (
+			'history' => ITEM_VALUE_TYPE_FLOAT,
+			'hostids' => array('888888', '999999'),
+			'time_from' => 1351090935,
+			'time_till' => 1351090937,
+		);
+		$query_known_hosts = array (
+			'history' => ITEM_VALUE_TYPE_FLOAT,
+			'hostids' => array('10053'),
+			'time_from' => 1351090935,
+			'time_till' => 1351090937,
+		);
 
 		$h = &self::$history;
 		$targetBegin = 2;
@@ -141,6 +156,7 @@ class CHistoryTest extends CApiTest {
 		$expected_2items = $this->getExpected($targetHistoriesFor2Items, FALSE);
 		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE, TRUE);
 		$expected_noitem = $this->getExpected($targetHistoriesForAllItems, FALSE);
+		$expected_known_hosts = $this->getExpected($targetHistories, FALSE, FALSE, array('10053'));
 
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {
@@ -158,6 +174,8 @@ class CHistoryTest extends CApiTest {
 			dataSet($query_2items, $expected_2items),
 			dataSet($query_notime, $expected_notime),
 			dataSet($query_noitem, $expected_noitem),
+			dataSet($query_unknown_hosts, array()),
+			dataSet($query_known_hosts, $expected_known_hosts),
 		);
 	}
 
