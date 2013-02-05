@@ -323,7 +323,7 @@ class CHistory extends CZBXAPI {
 		$options = $this->getMergedOptions($options);
 		$hasTimeRange = FALSE;
 
-		$itemids = $this->getItemIds($options);
+		$items = $this->getItems($options);
 
 		if (is_null($options['time_from'])) {
 			$time_from = 0;
@@ -344,8 +344,8 @@ class CHistory extends CZBXAPI {
 		$result = array();
 		$idx = 0;
 
-		foreach ($itemids as $itemid) {
-			$data_array = $history_gluon->getHistory($itemid, $time_from, $time_till);
+		foreach ($items as $item) {
+			$data_array = $history_gluon->getHistory($item['itemid'], $time_from, $time_till);
 
 			if (is_null($data_array)) {
 				continue;
@@ -362,6 +362,12 @@ class CHistory extends CZBXAPI {
 				if ($options['output'] == API_OUTPUT_EXTEND) {
 					$result[$idx]['ns'] = (string) $data['ns'];
 					$result[$idx]['value'] = (string) $data['value'];
+				}
+				if (isset($item['hostid'])) {
+					$result[$idx]['hosts'] = array(array('hostid' => $item['hostid']));
+				}
+				if (isset($item['triggerid'])) {
+					$result[$idx]['triggers'] = array(array('triggerid' => $item['triggerid']));
 				}
 				$idx++;
 			}
@@ -424,30 +430,34 @@ class CHistory extends CZBXAPI {
 		return zbx_array_merge($defOptions, $options);
 	}
 
-	protected function getItemIds($options) {
+	protected function getItems($options) {
 		$itemsQueryOptions = $this->getItemsQueryOptions($options);
 
 		if (is_null($options['itemids'])) {
-			return $this->getItemIdsBySQL($itemsQueryOptions);
+			return API::Item()->get($itemsQueryOptions);
 		}
 
 		zbx_value2array($options['itemids']);
 
 		if (count($itemsQueryOptions) > 0) {
-			$itemids = $this->getItemIdsBySQL($itemsQueryOptions);
-			return array_intersect($itemids, $options['itemids']);
-		} else {
-			return $options['itemids'];
-		}
-	}
+			$givenItemIds = array();
+			foreach ($options['itemids'] as $itemid) {
+				$givenItemIds[$itemid] = TRUE;
+			}
 
-	protected function getItemIdsBySQL($options) {
-		$itemids = array();
-		$items = API::Item()->get($options);
-		foreach ($items as $item) {
-			array_push($itemids, $item['itemid']);
+			$itemIdFilter = function($var){
+				return $givenItemIds[$var['itemid']];
+			};
+
+			$items = API::Item()->get($itemsQueryOptions);
+			return array_filter($items, $itemIdFilter);
+		} else {
+			$items = array();
+			foreach ($options['itemids'] as $itemid) {
+				array_push($items, array('itemid' => $itemid));
+			}
+			return $items;
 		}
-		return $itemids;
 	}
 
 	protected function getItemsQueryOptions($options) {
