@@ -128,11 +128,11 @@ class CHistoryTest extends CApiTest {
 		$targetBegin = 2;
 		$targetEnd = 7;
 		$targetHistories = array_slice($h, $targetBegin, $targetEnd - $targetBegin + 1);
-		$targetHistoriesForAllItems = array_merge($targetHistories, array($h[10]));
+		$targetHistoriesFor2Items = array_merge($targetHistories, array($h[10]));
 
 		$expected_simple = $this->getExpected($targetHistories, FALSE);
 		$expected_extend = $this->getExpected($targetHistories, TRUE);
-		$expected_2items = $this->getExpected($targetHistoriesForAllItems, FALSE);
+		$expected_2items = $this->getExpected($targetHistoriesFor2Items, FALSE);
 		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE, TRUE);
 
 		if (!function_exists(dataSet)) {
