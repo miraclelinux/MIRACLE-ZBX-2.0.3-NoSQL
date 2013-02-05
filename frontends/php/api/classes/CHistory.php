@@ -323,7 +323,7 @@ class CHistory extends CZBXAPI {
 		$options = $this->getMergedOptions($options);
 		$hasTimeRange = FALSE;
 
-		$itemids = $this->getItems($options);
+		$itemids = $this->getItemIds($options);
 
 		if (is_null($options['time_from'])) {
 			$time_from = 0;
@@ -424,7 +424,7 @@ class CHistory extends CZBXAPI {
 		return zbx_array_merge($defOptions, $options);
 	}
 
-	protected function getItems($options) {
+	protected function getItemIds($options) {
 		// FIXME: query items by CItem
 
 		if (!is_null($options['itemids'])) {
