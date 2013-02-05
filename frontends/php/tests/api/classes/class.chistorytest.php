@@ -123,17 +123,24 @@ class CHistoryTest extends CApiTest {
 			"history" => ITEM_VALUE_TYPE_FLOAT,
 			"itemids" => array("22188"),
 		);
+		$query_noitem = array (
+			"history" => ITEM_VALUE_TYPE_FLOAT,
+			"time_from" => 1351090935,
+			"time_till" => 1351090937,
+		);
 
 		$h = &self::$history;
 		$targetBegin = 2;
 		$targetEnd = 7;
 		$targetHistories = array_slice($h, $targetBegin, $targetEnd - $targetBegin + 1);
 		$targetHistoriesFor2Items = array_merge($targetHistories, array($h[10]));
+		$targetHistoriesForAllItems = array_merge(array($h[11]), $targetHistories, array($h[10]));
 
 		$expected_simple = $this->getExpected($targetHistories, FALSE);
 		$expected_extend = $this->getExpected($targetHistories, TRUE);
 		$expected_2items = $this->getExpected($targetHistoriesFor2Items, FALSE);
 		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE, TRUE);
+		$expected_noitem = $this->getExpected($targetHistoriesForAllItems, FALSE);
 
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {
@@ -150,6 +157,7 @@ class CHistoryTest extends CApiTest {
 			dataSet($query_unmatch, array()),
 			dataSet($query_2items, $expected_2items),
 			dataSet($query_notime, $expected_notime),
+			dataSet($query_noitem, $expected_noitem),
 		);
 	}
 
