@@ -156,7 +156,8 @@ class CHistoryTest extends CApiTest {
 		$expected_2items = $this->getExpected($targetHistoriesFor2Items, FALSE);
 		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE, TRUE);
 		$expected_noitem = $this->getExpected($targetHistoriesForAllItems, FALSE);
-		$expected_known_hosts = $this->getExpected($targetHistories, FALSE, FALSE, array('10053'));
+		$expected_known_hosts = $this->getExpected($targetHistories, FALSE, FALSE,
+												   array(array('hostid' => '10053')));
 
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {
