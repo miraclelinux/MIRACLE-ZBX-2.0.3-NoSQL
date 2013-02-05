@@ -159,24 +159,22 @@ class CHistoryTest extends CApiTest {
 		$expected_known_hosts = $this->getExpected($targetHistories, FALSE, FALSE,
 												   array(array('hostid' => '10053')));
 
-		if (!function_exists(dataSet)) {
-			function dataSet($query, $expected) {
-				return array(
-					array('query' => $query,
-						  'expected' => $expected),
-				);
-			}
-		}
+		$dataSet = function ($query, $expected) {
+			return array(
+				array('query' => $query,
+					  'expected' => $expected),
+			);
+		};
 
 		return array (
-			dataSet($query_simple, $expected_simple),
-			dataSet($query_extend, $expected_extend),
-			dataSet($query_unmatch, array()),
-			dataSet($query_2items, $expected_2items),
-			dataSet($query_notime, $expected_notime),
-			dataSet($query_noitem, $expected_noitem),
-			dataSet($query_unknown_hosts, array()),
-			dataSet($query_known_hosts, $expected_known_hosts),
+			$dataSet($query_simple, $expected_simple),
+			$dataSet($query_extend, $expected_extend),
+			$dataSet($query_unmatch, array()),
+			$dataSet($query_2items, $expected_2items),
+			$dataSet($query_notime, $expected_notime),
+			$dataSet($query_noitem, $expected_noitem),
+			$dataSet($query_unknown_hosts, array()),
+			$dataSet($query_known_hosts, $expected_known_hosts),
 		);
 	}
 
