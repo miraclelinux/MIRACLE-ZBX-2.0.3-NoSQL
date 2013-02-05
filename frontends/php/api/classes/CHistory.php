@@ -455,7 +455,7 @@ class CHistory extends CZBXAPI {
 		$knownOptionKeys = array('hostids', 'nodeids', 'triggerids');
 		$itemsQueryOptions = array();
 		foreach ($knownOptionKeys as $key) {
-			if (!is_null($options[$key])) {
+			if (isset($options[$key])) {
 				$itemsQueryOptions[$key] = $options[$key];
 			}
 		}
