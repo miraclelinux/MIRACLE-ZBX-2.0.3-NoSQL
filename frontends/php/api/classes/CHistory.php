@@ -352,7 +352,7 @@ class CHistory extends CZBXAPI {
 			}
 
 			foreach ($data_array['array'] as $data) {
-				if (!$this->isRequiredValueType($options['history'], $data['value']))
+				if (!$this->isRequiredValueType($data['value'], $options['history']))
 					continue;
 
 				$result[$idx]['itemid'] = (string) $data['id'];
@@ -380,7 +380,7 @@ class CHistory extends CZBXAPI {
 		return $result;
 	}
 
-	protected function isRequiredValueType($requiredType, $value) {
+	protected function isRequiredValueType($value, $requiredType) {
 		$actualType = gettype($value);
 		switch ($requiredType) {
 			case ITEM_VALUE_TYPE_LOG:
