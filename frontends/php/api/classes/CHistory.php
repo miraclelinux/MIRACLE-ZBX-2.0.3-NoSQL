@@ -425,19 +425,41 @@ class CHistory extends CZBXAPI {
 	}
 
 	protected function getItemIds($options) {
-		// FIXME: query items by CItem
+		$itemsQueryOptions = $this->getItemsQueryOptions($options);
 
-		if (!is_null($options['itemids'])) {
-			zbx_value2array($options['itemids']);
-			return $options['itemids'];
-		} else {
-			$itemids = array();
-			$items = API::Item()->get();
-			foreach($items as $item) {
-				array_push($itemids, $item['itemid']);
-			}
-			return $itemids;
+		if (is_null($options['itemids'])) {
+			return $this->getItemIdsBySQL($itemsQueryOptions);
 		}
+
+		zbx_value2array($options['itemids']);
+
+		if (count($itemsQueryOptions) > 0) {
+			$itemids = $this->getItemIdsBySQL($itemsQueryOptions);
+			return array_intersect($itemids, $options['itemids']);
+		} else {
+			return $options['itemids'];
+		}
+	}
+
+	protected function getItemIdsBySQL($options) {
+		$itemids = array();
+		$items = API::Item()->get($options);
+		foreach ($items as $item) {
+			array_push($itemids, $item['itemid']);
+		}
+		return $itemids;
+	}
+
+	protected function getItemsQueryOptions($options) {
+		// FIXME: implement remaining options
+		$knownOptionKeys = array('hostids', 'nodeids', 'triggerids');
+		$itemsQueryOptions = array();
+		foreach ($knownOptionKeys as $key) {
+			if (!is_null($options[$key])) {
+				$itemsQueryOptions[$key] = $options[$key];
+			}
+		}
+		return $itemsQueryOptions;
 	}
 
 	public function create($items = array()) {
