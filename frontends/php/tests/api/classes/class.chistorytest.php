@@ -56,19 +56,19 @@ class CHistoryTest extends CApiTest {
 	}
 
 	public function setSQLHistory($history) {
-		$tableName = "history";
+		$tableName = 'history';
 		switch ($history[HISTORY_TYPE]) {
 		case ITEM_VALUE_TYPE_UINT64:
-			$tableName = "history_uint";
+			$tableName = 'history_uint';
 			break;
 		case ITEM_VALUE_TYPE_STR:
-			$tableName = "history_str";
+			$tableName = 'history_str';
 			break;
 		case ITEM_VALUE_TYPE_LOG:
-			$tableName = "history_log";
+			$tableName = 'history_log';
 			break;
 		case ITEM_VALUE_TYPE_TEXT:
-			$tableName = "history_text";
+			$tableName = 'history_text';
 			break;
 		case ITEM_VALUE_TYPE_FLOAT:
 		default:
@@ -95,13 +95,13 @@ class CHistoryTest extends CApiTest {
 	private function getExpected($histories, $extend, $noTime = FALSE) {
 		$expected = array();
 		foreach ($histories as $history) {
-			$element = array("itemid" => (string) $history[HISTORY_ITEMID]);
+			$element = array('itemid' => (string) $history[HISTORY_ITEMID]);
 			if (!$noTime) {
-				$element["clock"] = (string) $history[HISTORY_CLOCK];
+				$element['clock'] = (string) $history[HISTORY_CLOCK];
 			}
 			if ($extend) {
-				$element["value"] = (string) $history[HISTORY_VALUE];
-				$element["ns"] = (string) $history[HISTORY_NS];
+				$element['value'] = (string) $history[HISTORY_VALUE];
+				$element['ns'] = (string) $history[HISTORY_NS];
 			}
 			array_push($expected, $element);
 		}
@@ -110,23 +110,23 @@ class CHistoryTest extends CApiTest {
 
 	public function providerGet() {
 		$query_simple = array (
-			"history" => ITEM_VALUE_TYPE_FLOAT,
-			"itemids" => array("22188"),
-			"time_from" => 1351090935,
-			"time_till" => 1351090937,
+			'history' => ITEM_VALUE_TYPE_FLOAT,
+			'itemids' => array("22188"),
+			'time_from' => 1351090935,
+			'time_till' => 1351090937,
 		);
-		$query_extend = array_merge($query_simple, array("output" => "extend"));
-		$query_unmatch = array_merge($query_simple, array("history" => ITEM_VALUE_TYPE_LOG));
+		$query_extend = array_merge($query_simple, array('output' => 'extend'));
+		$query_unmatch = array_merge($query_simple, array('history' => ITEM_VALUE_TYPE_LOG));
 		$query_2items = $query_simple;
-		$query_2items["itemids"] = array("22188", "22189");
+		$query_2items['itemids'] = array('22188', '22189');
 		$query_notime = array (
-			"history" => ITEM_VALUE_TYPE_FLOAT,
-			"itemids" => array("22188"),
+			'history' => ITEM_VALUE_TYPE_FLOAT,
+			'itemids' => array('22188'),
 		);
 		$query_noitem = array (
-			"history" => ITEM_VALUE_TYPE_FLOAT,
-			"time_from" => 1351090935,
-			"time_till" => 1351090937,
+			'history' => ITEM_VALUE_TYPE_FLOAT,
+			'time_from' => 1351090935,
+			'time_till' => 1351090937,
 		);
 
 		$h = &self::$history;
@@ -145,8 +145,8 @@ class CHistoryTest extends CApiTest {
 		if (!function_exists(dataSet)) {
 			function dataSet($query, $expected) {
 				return array(
-					array("query" => $query,
-						  "expected" => $expected),
+					array('query' => $query,
+						  'expected' => $expected),
 				);
 			}
 		}
@@ -162,11 +162,11 @@ class CHistoryTest extends CApiTest {
 	}
 
 	public function testCreateValid() {
-		$this->markTestIncomplete("History doesn't have create method");
+		$this->markTestIncomplete('History doesn\'t have create method');
 	}
 
 	public function testDelete() {
-		$this->markTestIncomplete("History doesn't have delete method");
+		$this->markTestIncomplete('History doesn\'t have delete method');
 	}
 
 	private function assertGet($object, $useHistoryGluon) {
@@ -178,8 +178,8 @@ class CHistoryTest extends CApiTest {
 			$HISTORY_DB['USE']  = 'no';
 		}
 
-		$actual = $this->api->get($object["query"]);
-		$this->assertEquals($object["expected"], $actual);
+		$actual = $this->api->get($object['query']);
+		$this->assertEquals($object['expected'], $actual);
 
 		$HISTORY_DB['USE'] = $use_history_db_saved;
 	}
