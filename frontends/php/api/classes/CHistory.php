@@ -342,7 +342,6 @@ class CHistory extends CZBXAPI {
 
 		$history_gluon = HistoryGluon::getInstance();
 		$result = array();
-		$idx = 0;
 
 		foreach ($items as $item) {
 			$data_array = $history_gluon->getHistory($item['itemid'], $time_from, $time_till);
@@ -355,21 +354,23 @@ class CHistory extends CZBXAPI {
 				if (!$this->isRequiredValueType($data['value'], $options['history']))
 					continue;
 
-				$result[$idx]['itemid'] = (string) $data['id'];
+				$num = array_push($result, array());
+				$element = &$result[$num - 1];
+
+				$element['itemid'] = (string) $data['id'];
 				if ($hasTimeRange) {
-					$result[$idx]['clock'] = (string) $data['sec'];
+					$element['clock'] = (string) $data['sec'];
 				}
 				if ($options['output'] == API_OUTPUT_EXTEND) {
-					$result[$idx]['ns'] = (string) $data['ns'];
-					$result[$idx]['value'] = (string) $data['value'];
+					$element['ns'] = (string) $data['ns'];
+					$element['value'] = (string) $data['value'];
 				}
 				if (isset($item['hostid'])) {
-					$result[$idx]['hosts'] = array(array('hostid' => $item['hostid']));
+					$element['hosts'] = array(array('hostid' => $item['hostid']));
 				}
 				if (isset($item['triggerid'])) {
-					$result[$idx]['triggers'] = array(array('triggerid' => $item['triggerid']));
+					$element['triggers'] = array(array('triggerid' => $item['triggerid']));
 				}
-				$idx++;
 			}
 		}
 
