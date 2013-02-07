@@ -365,11 +365,12 @@ class CHistory extends CZBXAPI {
 					$history['ns'] = (string) $hglHistory['ns'];
 					$history['value'] = (string) $hglHistory['value'];
 				}
-				if (isset($item['hostid'])) {
-					$history['hosts'] = array(array('hostid' => $item['hostid']));
-				}
-				if (isset($item['triggerid'])) {
-					$history['triggers'] = array(array('triggerid' => $item['triggerid']));
+
+				$pluralKeyMap = array('hostid' => 'hosts', 'triggerid' => 'triggers');
+				foreach ($pluralKeyMap as $key => $pluralKey) {
+					if ($key != 'itemid' && isset($item[$key])) {
+						$history[$pluralKey] = array(array($key => $item[$key]));
+					}
 				}
 			}
 		}
