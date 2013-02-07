@@ -341,47 +341,47 @@ class CHistory extends CZBXAPI {
 		$time_till += 1;
 
 		$history_gluon = HistoryGluon::getInstance();
-		$result = array();
+		$histories = array();
 
 		foreach ($items as $item) {
-			$data_array = $history_gluon->getHistory($item['itemid'], $time_from, $time_till);
+			$hglHistories = $history_gluon->getHistory($item['itemid'], $time_from, $time_till);
 
-			if (is_null($data_array)) {
+			if (is_null($hglHistories)) {
 				continue;
 			}
 
-			foreach ($data_array['array'] as $data) {
-				if (!$this->isRequiredValueType($data['value'], $options['history']))
+			foreach ($hglHistories['array'] as $hglHistory) {
+				if (!$this->isRequiredValueType($hglHistory['value'], $options['history']))
 					continue;
 
-				$num = array_push($result, array());
-				$element = &$result[$num - 1];
+				$num = array_push($histories, array());
+				$history = &$histories[$num - 1];
 
-				$element['itemid'] = (string) $data['id'];
+				$history['itemid'] = (string) $hglHistory['id'];
 				if ($hasTimeRange) {
-					$element['clock'] = (string) $data['sec'];
+					$history['clock'] = (string) $hglHistory['sec'];
 				}
 				if ($options['output'] == API_OUTPUT_EXTEND) {
-					$element['ns'] = (string) $data['ns'];
-					$element['value'] = (string) $data['value'];
+					$history['ns'] = (string) $hglHistory['ns'];
+					$history['value'] = (string) $hglHistory['value'];
 				}
 				if (isset($item['hostid'])) {
-					$element['hosts'] = array(array('hostid' => $item['hostid']));
+					$history['hosts'] = array(array('hostid' => $item['hostid']));
 				}
 				if (isset($item['triggerid'])) {
-					$element['triggers'] = array(array('triggerid' => $item['triggerid']));
+					$history['triggers'] = array(array('triggerid' => $item['triggerid']));
 				}
 			}
 		}
 
 		if (is_null($options['preservekeys'])) {
-			$result = zbx_cleanHashes($result);
+			$histories = zbx_cleanHashes($histories);
 		}
 
 		if (isset($options['countOutput'])) {
-			return array('rowscount' => count($result));
+			return array('rowscount' => count($histories));
 		} else {
-			return $result;
+			return $histories;
 		}
 	}
 
