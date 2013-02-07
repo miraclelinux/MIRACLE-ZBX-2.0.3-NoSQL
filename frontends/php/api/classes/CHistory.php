@@ -326,25 +326,25 @@ class CHistory extends CZBXAPI {
 		$items = $this->getItems($options);
 
 		if (is_null($options['time_from'])) {
-			$time_from = 0;
+			$timeFrom = 0;
 		} else {
-			$time_from = $options['time_from'];
+			$timeFrom = $options['time_from'];
 			$hasTimeRange = TRUE;
 		}
 
 		if (is_null($options['time_till'])) {
-			$time_till = time(null);
+			$timeTill = time(null);
 		} else {
-			$time_till = $options['time_till'];
+			$timeTill = $options['time_till'];
 			$hasTimeRange = TRUE;
 		}
-		$time_till += 1;
+		$timeTill += 1;
 
-		$history_gluon = HistoryGluon::getInstance();
+		$historyGluon = HistoryGluon::getInstance();
 		$histories = array();
 
 		foreach ($items as $item) {
-			$hglHistories = $history_gluon->getHistory($item['itemid'], $time_from, $time_till);
+			$hglHistories = $historyGluon->getHistory($item['itemid'], $timeFrom, $timeTill);
 
 			if (is_null($hglHistories)) {
 				continue;
