@@ -112,38 +112,38 @@ class CHistoryTest extends CApiTest {
 	}
 
 	public function providerGet() {
-		$query_simple = array (
+		$querySimple = array (
 			'history' => ITEM_VALUE_TYPE_FLOAT,
 			'itemids' => array("22188"),
 			'time_from' => 1351090935,
 			'time_till' => 1351090937,
 		);
-		$query_extend = array_merge($query_simple, array('output' => 'extend'));
-		$query_unmatch = array_merge($query_simple, array('history' => ITEM_VALUE_TYPE_LOG));
-		$query_2items = $query_simple;
-		$query_2items['itemids'] = array('22188', '22189');
-		$query_notime = array (
+		$queryExtend = array_merge($querySimple, array('output' => 'extend'));
+		$queryUnmatch = array_merge($querySimple, array('history' => ITEM_VALUE_TYPE_LOG));
+		$query2Items = $querySimple;
+		$query2Items['itemids'] = array('22188', '22189');
+		$queryNoTime = array (
 			'history' => ITEM_VALUE_TYPE_FLOAT,
 			'itemids' => array('22188'),
 		);
-		$query_noitem = array (
+		$queryNoItem = array (
 			'history' => ITEM_VALUE_TYPE_FLOAT,
 			'time_from' => 1351090935,
 			'time_till' => 1351090937,
 		);
-		$query_unknown_hosts = array (
+		$queryUnknownHosts = array (
 			'history' => ITEM_VALUE_TYPE_FLOAT,
 			'hostids' => array('888888', '999999'),
 			'time_from' => 1351090935,
 			'time_till' => 1351090937,
 		);
-		$query_known_hosts = array (
+		$queryKnownHosts = array (
 			'history' => ITEM_VALUE_TYPE_FLOAT,
 			'hostids' => array('10053'),
 			'time_from' => 1351090935,
 			'time_till' => 1351090937,
 		);
-		$query_count = array_merge($query_known_hosts, array('countOutput' => 'true'));
+		$queryCount = array_merge($queryKnownHosts, array('countOutput' => 'true'));
 
 		$h = &self::$history;
 		$targetBegin = 2;
@@ -152,12 +152,12 @@ class CHistoryTest extends CApiTest {
 		$targetHistoriesFor2Items = array_merge($targetHistories, array($h[10]));
 		$targetHistoriesForAllItems = array_merge(array($h[11]), $targetHistories, array($h[10]));
 
-		$expected_simple = $this->getExpected($targetHistories, FALSE);
-		$expected_extend = $this->getExpected($targetHistories, TRUE);
-		$expected_2items = $this->getExpected($targetHistoriesFor2Items, FALSE);
-		$expected_notime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE, TRUE);
-		$expected_noitem = $this->getExpected($targetHistoriesForAllItems, FALSE);
-		$expected_known_hosts = $this->getExpected($targetHistories, FALSE, FALSE,
+		$expectedSimple = $this->getExpected($targetHistories, FALSE);
+		$expectedExtend = $this->getExpected($targetHistories, TRUE);
+		$expected2Items = $this->getExpected($targetHistoriesFor2Items, FALSE);
+		$expectedNoTime = $this->getExpected(array_slice(self::$history, 0, 10), FALSE, TRUE);
+		$expectedNoItem = $this->getExpected($targetHistoriesForAllItems, FALSE);
+		$expectedKnownHosts = $this->getExpected($targetHistories, FALSE, FALSE,
 												   array(array('hostid' => '10053')));
 
 		$dataSet = function ($query, $expected) {
@@ -168,15 +168,15 @@ class CHistoryTest extends CApiTest {
 		};
 
 		return array (
-			$dataSet($query_simple, $expected_simple),
-			$dataSet($query_count, array('rowscount' => 6)),
-			$dataSet($query_extend, $expected_extend),
-			$dataSet($query_unmatch, array()),
-			$dataSet($query_2items, $expected_2items),
-			$dataSet($query_notime, $expected_notime),
-			$dataSet($query_noitem, $expected_noitem),
-			$dataSet($query_unknown_hosts, array()),
-			$dataSet($query_known_hosts, $expected_known_hosts),
+			$dataSet($querySimple, $expectedSimple),
+			$dataSet($queryCount, array('rowscount' => 6)),
+			$dataSet($queryExtend, $expectedExtend),
+			$dataSet($queryUnmatch, array()),
+			$dataSet($query2Items, $expected2Items),
+			$dataSet($queryNoTime, $expectedNoTime),
+			$dataSet($queryNoItem, $expectedNoItem),
+			$dataSet($queryUnknownHosts, array()),
+			$dataSet($queryKnownHosts, $expectedKnownHosts),
 		);
 	}
 
